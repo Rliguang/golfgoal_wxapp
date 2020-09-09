@@ -1,0 +1,159 @@
+{
+	"pages": [{ //页面配置
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "高球成绩卡",
+				"enablePullDownRefresh": true
+			}
+		}, {
+			"path": "pages/addPk/addPk",
+			"style": {
+				"navigationBarTitleText": "添加PK"
+			}
+		}, {
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/invitedCompetitor/invitedCompetitor",
+			"style": {
+				"navigationBarTitleText": "邀请比赛球手"
+			}
+		},
+		{
+			"path": "pages/invitedJoin/invitedJoin",
+			"style": {
+				"navigationBarTitleText": "邀请加入"
+			}
+		},
+		{
+			"path": "pages/startScoring/startScoring",
+			"style": {
+				"navigationBarTitleText": "开局记分"
+			}
+		},
+		{
+			"path": "pages/chooseEnds/chooseEnds",
+			"style": {
+				"navigationBarTitleText": "选择场地"
+			}
+		}, {
+			"path": "pages/ballFriend/ballFriend",
+			"style": {
+				"navigationBarTitleText": "我的球友"
+			}
+		}, {
+			"path": "pages/ballFriend/ballFriendSearch",
+			"style": {
+				"navigationBarTitleText": "搜索联系人"
+			}
+		}, {
+			"path": "pages/onlooker/onlooker",
+			"style": {
+				"navigationBarTitleText": "围观球友"
+			}
+		}, {
+			"path": "pages/modification/modification",
+			"style": {
+				"navigationBarTitleText": "修改球局"
+			}
+		}, {
+			"path": "pages/invite/invite",
+			"style": {
+				"navigationBarTitleText": "邀请比赛球手"
+			}
+		}, {
+			"path": "pages/score/score",
+			"style": {
+				"navigationBarTitleText": "球局记分卡",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/ballScore/ballScore",
+			"style": {
+				"navigationBarTitleText": "球局记分卡"
+			}
+		},
+		{
+			"path": "pages/addPk/addGolfPk",
+			"style": {
+				"navigationBarTitleText": "球局记分卡"
+			}
+		},
+		{
+			"path": "pages/addPk/scoreDetail",
+			"style": {
+				"navigationBarTitleText": "球局记分卡"
+			}
+		},
+		{
+			"path": "pages/addPk/addLike",
+			"style": {
+				"navigationBarTitleText": "点赞"
+			}
+		},
+		{
+			"path": "pages/addPk/pkDetail",
+			"style": {
+				"navigationBarTitleText": "Pk详情"
+			}
+		}, {
+			"path": "pages/setScore/setScore",
+			"style": {
+				"navigationBarTitleText": "球洞计分"
+			}
+		}, {
+			"path": "pages/PlayingRecord/PlayingRecord",
+			"style": {
+				"navigationBarTitleText": "打球记录"
+			}
+		}, {
+			"path": "pages/onlookersRecord/onlookersRecord",
+			"style": {
+				"navigationBarTitleText": "围观记录"
+			}
+		}
+
+
+
+	],
+	"globalStyle": { //设置默认页面的窗口表现
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "高尔夫项目", //导航栏标题文字内容
+		"navigationBarBackgroundColor": "#00d458",
+		"backgroundColor": "#fff"
+		// "enablePullDownRefresh": true
+	},
+	"tabBar": {
+		"color": "#7a7e83",
+		"selectedColor": "#3cc51f",
+		"borderStyle": "black",
+		"backgroundColor": "#fff",
+		"height": "50px",
+		"fontSize": "10px",
+		"iconWidth": "24px",
+		"spacing": "3px",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"iconPath": "static/image/home_0.png",
+			"selectedIconPath": "static/image/home_1.png",
+			"text": "首页"
+		}, {
+			"pagePath": "pages/mine/mine",
+			"iconPath": "static/image/mine_0.png",
+			"selectedIconPath": "static/image/mine_1.png",
+			"text": "我的"
+		}]
+		// "midButton": {
+		// 	"width": "80px",
+		// 	"height": "50px",
+		// 	"text": "文字",
+		// 	"iconPath": "static/image/midButton_iconPath.png",
+		// 	"iconWidth": "24px",
+		// 	"backgroundImage": "static/image/midButton_backgroundImage.png"
+		// }
+	}
+}
