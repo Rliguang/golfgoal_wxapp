@@ -3,69 +3,75 @@
 		<!-- 新建比赛 start -->
 		<button class="golf-auth" type="primary" open-type="getUserInfo" @getuserinfo="getUserInfo" @click="golfLogin"
 		 hover-class="btn-hover">
-			新建球局
+			开局记分
 		</button>
+		<view class="golf-title">最近活动</view>
+		<view class="golf-content">
+			<!-- 活动列表 -->
+			<view class="list-activities" @click="eventDetails" v-for="value in activity">
+				<view class="imgs">
+					<image v-if="value.mainUrl" :src="'https://dingqiang-golf.oss-cn-shenzhen.aliyuncs.com/'+value.coverUrl" mode=""></image>
+					<image v-else src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1600416514&di=65924f6720bbce9f5a68f8669fecfc88&src=http://a2.att.hudong.com/86/10/01300000184180121920108394217.jpg"
+					 mode=""></image>
+				</view>
+				<view class="stadium-name">
+					{{value.activityTitle}}
+				</view>
+				<view class="stadium-address">
+					<image src="../../static/image/address.png" mode=""></image>
+					{{value.activityAddress}}
+				</view>
+				<view class="stadium-state">
+					报名中
+				</view>
+			</view>
+		</view>
 		<!-- 新建比赛 end -->
 		<view class="golf-title">今日球局</view>
 		<view class="golf-content">
-			<!-- 高尔夫列表 start -->
-			<!-- <view v-if="golfListNull.length!==0" v-for="(item,index) in golfListNull" :key="index" class="golf-list flex align-center">
-				<view class="golf-info" style="background-color: #007 AFF;" @click="goGameDetail(item.golfTournamentId,item.currentTournamentGallery.golfTournamentGalleryId, item.currentTournamentGallery.isOrganizer, item.currentTournamentGallery.tournamentIdentity,item)">
-					<view class="golf-line flex flex-between">
-						<view class="golf-site">{{item.golfCourse.courseName}}</view>
-						<view class="golf-sate golf-inProgress" v-if="item.tournamentStatus===0">待开始</view>
-						<view class="golf-sate golf-end" v-if="item.tournamentStatus===1">进行中</view>
-						<view class="golf-sate golf-end" v-if="item.tournamentStatus===9">已结束</view>
-					</view>
-
-					<view class="golf-line golf-time">
-						<text>时间：</text>{{item.beginTime}} <text>围观：</text>{{item.galleryNumber}}
-						<view class="buttom" v-if="item.currentTournamentGallery.isOrganizer == 1 && item.tournamentStatus===0"
-						 @click.stop="goGameDelete(item)">
+			<!-- 列表 -->
+			<view class="" v-if="golfListNull.length!==0" v-for="(item,index) in golfListNull" :key="index">
+				<view class="list-box" @click="goGameDetail(item.golfTournamentId,item.currentTournamentGallery.golfTournamentGalleryId, item.currentTournamentGallery.isOrganizer, item.currentTournamentGallery.tournamentIdentity,item)">
+					<view class="top">
+						<view class="stadium-name">
+							{{item.golfCourse.courseName}}
+						</view>
+						<view class="delete" v-if="item.tournamentStatus===0" @click.stop="goGameDelete(item)">
+							<image src="../../static/image/delete.png" mode=""></image>
 							删除
 						</view>
 					</view>
-				</view>
-			</view> -->
-			
-			<!-- 列表 -->
-			<view class="list-box" v-if="golfListNull.length!==0" v-for="(item,index) in golfListNull" :key="index" @click="goGameDetail(item.golfTournamentId,item.currentTournamentGallery.golfTournamentGalleryId, item.currentTournamentGallery.isOrganizer, item.currentTournamentGallery.tournamentIdentity,item)">
-				<view class="top">
-					<view class="stadium-name">
-						{{item.golfCourse.courseName}}
+					<view class="content">
+						<view class="creator">
+							<image :src="item.organizer.avatar" mode=""></image>
+							{{item.tournamentName}}(创建者)
+						</view>
+						<view class="onlookers">
+							<image src="../../static/image/onlookers.png" mode=""></image>
+							当前围观:{{item.galleryNumber}}人
+						</view>
 					</view>
-					<view class="delete" v-if="item.tournamentStatus===0" @click.stop="goGameDelete(item)">
-						<image src="../../static/image/delete.png" mode=""></image>
-						删除
+					<view class="golfers">
+						<view class="golfers-box" v-for="value in item.golfTournamentGalleryList">
+							<image v-if="value.avatar" :src="value.avatar" mode=""></image>
+							<image v-else src="../../static/image/default.png" mode=""></image>
+							{{value.nickname}}
+						</view>
+						<view class="player-no" v-if="item.golfTournamentGalleryList.length == 0">
+							暂无球手
+						</view>
 					</view>
-				</view>
-				<view class="content">
-					<view class="creator">
-						<image :src="item.organizer.avatar" mode=""></image>
-						{{item.tournamentName}}(创建者)
-					</view>
-					<view class="onlookers">
-						<image src="../../static/image/onlookers.png" mode=""></image>
-						当前围观:{{item.galleryNumber}}人
-					</view>
-				</view>
-				<view class="golfers">
-					<view class="golfers-box" v-for="value in item.golfTournamentGalleryList">
-						<image v-if="value.avatar" :src="value.avatar" mode=""></image>
-						<image v-else src="../../static/image/default.png" mode=""></image>
-						{{value.nickname}}
-					</view>
-					<view class="player-no" v-if="item.golfTournamentGalleryList.length == 0">
-						暂无球手
+					<view class="following">
+						<view class="time">
+							{{item.showTime}}
+						</view>
+						<view class="state" style="color: #FFCB1C;" v-if="item.tournamentStatus===0">待开始</view>
+						<view class="state" style="color: #0DD561;" v-if="item.tournamentStatus===1">进行中</view>
+						<view class="state" style="color: #FF3B30;" v-if="item.tournamentStatus===9">已结束</view>
 					</view>
 				</view>
-				<view class="following">
-					<view class="time">
-						{{item.showTime}}
-					</view>
-					<view class="state" style="color: #FFCB1C;" v-if="item.tournamentStatus===0">待开始</view>
-					<view class="state" style="color: #0DD561;" v-if="item.tournamentStatus===1">进行中</view>
-					<view class="state" style="color: #FF3B30;" v-if="item.tournamentStatus===9">已结束</view>
+				<view class="password" v-if="item.isControlLike == 1 && item.currentTournamentGallery.isOrganizer == 1">
+					点赞密码:{{item.likePwd}} 密码请勿泄露给无关人员
 				</view>
 			</view>
 			<!-- 高尔夫列表 end -->
@@ -122,6 +128,7 @@
 				isCanUse: uni.getStorageSync('isCanUse') || true, //默认为true
 				determine: false,
 				url: "",
+				activity: [], //活动列表
 			}
 		},
 		onLoad(options) {
@@ -155,12 +162,32 @@
 			})
 			if (res.code === 0) {
 				this.golfListNull = res.data.records
-				console.log(this.golfListNull);
 			}
 			// var pages = getCurrentPages()
 		},
-
+		mounted() {
+			this.activityList();
+		},
 		methods: {
+			//获取活动列表数据
+			activityList() {
+				this.$api.api.activityList({
+					data: {
+						current: 1,
+						size: 100,
+					}
+				}).then(res => {
+					if (res.data.code === 0) {
+						this.activity = res.data.data
+					}
+				})
+			},
+			//跳转到活动详情页面
+			eventDetails() {
+				uni.navigateTo({
+					url: '/pages/eventDetails/eventDetails'
+				});
+			},
 			//获取当前页面列表数据
 			getDataList() {
 				this.golfListNul = [];
@@ -176,6 +203,7 @@
 						_this.golfListNull = res.data.data.records
 					}
 				})
+
 			},
 			goGameDelete(item) {
 				let _this = this;
@@ -546,14 +574,27 @@
 			}
 		}
 	}
-	
-	.list-box{
+
+	.password {
+		height: 7.2vw;
+		background-color: #000000;
+		border-radius: 1.07vw;
+		opacity: 0.25;
+		font-size: 2.93vw;
+		color: #ffffff;
+		line-height: 7.2vw;
+		text-indent: 1em;
+		margin: 2vw 0;
+	}
+
+	.list-box {
 		padding: 24rpx;
 		position: relative;
 		background-color: #ffffff;
 		border-radius: 8rpx;
 		margin-top: 32rpx;
-		.top{
+
+		.top {
 			height: 76rpx;
 			line-height: 50rpx;
 			font-size: 32rpx;
@@ -561,7 +602,8 @@
 			font-weight: 550;
 			position: relative;
 			border-bottom: 1px solid #eeeeee;
-			.delete{
+
+			.delete {
 				position: absolute;
 				top: 0;
 				width: 80rpx;
@@ -569,7 +611,8 @@
 				text-align: right;
 				font-size: 24rpx;
 				color: #FF5B5A;
-				image{
+
+				image {
 					position: absolute;
 					left: 8rpx;
 					top: 14rpx;
@@ -578,14 +621,16 @@
 				}
 			}
 		}
-		.content{
+
+		.content {
 			height: 80rpx;
 			line-height: 80rpx;
 			font-size: 24rpx;
 			color: #333333;
 			position: relative;
-			.creator{
-				image{
+
+			.creator {
+				image {
 					position: relative;
 					left: 0;
 					width: 24rpx;
@@ -594,13 +639,15 @@
 					border-radius: 50%;
 				}
 			}
-			.onlookers{
+
+			.onlookers {
 				height: 80rpx;
 				position: absolute;
 				text-align: right;
 				top: 0;
 				right: 0;
-				image{
+
+				image {
 					position: absolute;
 					left: -24rpx;
 					width: 22rpx;
@@ -609,7 +656,8 @@
 				}
 			}
 		}
-		.golfers{
+
+		.golfers {
 			height: 128rpx;
 			display: flex;
 			display: -webkit-flex;
@@ -617,9 +665,11 @@
 			flex-wrap: wrap;
 			background-color: #f5f5f5;
 			border-radius: 8rpx;
-			.golfers-box{
+
+			.golfers-box {
 				position: relative;
-				image{
+
+				image {
 					width: 32rpx;
 					height: 32rpx;
 					margin-left: 20rpx;
@@ -628,6 +678,7 @@
 					border-radius: 16rpx;
 					position: relative;
 				}
+
 				width: 48%;
 				height: 44rpx;
 				margin-top: 10rpx;
@@ -638,32 +689,100 @@
 				white-space: nowrap;
 				text-overflow: ellipsis;
 			}
-			.player-no{
+
+			.player-no {
 				width: 100%;
 				height: 100%;
 				line-height: 128rpx;
-				color: 	#999999;
+				color: #999999;
 				text-align: center;
 				font-size: 24rpx;
 			}
 		}
-		.following{
+
+		.following {
 			height: 54rpx;
 			line-height: 72rpx;
 			display: flex;
-			.time{
+
+			.time {
 				width: 300rpx;
 				height: 54rpx;
 				color: #666666;
 				font-size: 24rpx;
 			}
-			.state{
+
+			.state {
 				color: #0DD561;
 				font-size: 32rpx;
 				font-weight: 600;
 				position: absolute;
 				right: 24rpx;
 			}
+		}
+	}
+
+	.list-activities {
+		width: 100%;
+		height: 42.67vw;
+		border-radius: 1.07vw;
+		margin: 3.2vw 0;
+		position: relative;
+
+		.imgs {
+			width: 100%;
+			height: 100%;
+			border-radius: 1.07vw;
+
+			image {
+				width: 100%;
+				height: 100%;
+				border-radius: 1.07vw;
+			}
+		}
+
+		.stadium-name {
+			position: absolute;
+			width: 70.73vw;
+			height: 3.73vw;
+			line-height: 3.73vw;
+			font-size: 4vw;
+			color: #ffffff;
+			left: 3.2vw;
+			top: 29.7vw;
+		}
+
+		.stadium-address {
+			position: absolute;
+			width: 70.2vw;
+			height: 3.07vw;
+			font-size: 3.2vw;
+			color: #ffffff;
+			padding-left: 3vw;
+			left: 3.2vw;
+			top: 36.6vw;
+
+			image {
+				position: absolute;
+				width: 2.8vw;
+				height: 3.47vw;
+				left: -0.5vw;
+				top: 0.5vw;
+			}
+		}
+
+		.stadium-state {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 11.73vw;
+			height: 5.33vw;
+			line-height: 5.33vw;
+			background-color: #0dd561;
+			border-radius: 0vw 1.07vw 0vw 1.07vw;
+			font-size: 3.2vw;
+			color: #ffffff;
+			text-align: center;
 		}
 	}
 </style>

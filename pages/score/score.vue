@@ -14,7 +14,7 @@
 			<tabsControl :current="current" :values="items" @clickItem="onClickItem" style-type="button" active-color="#0fd762">
 			</tabsControl>
 			<text class="golf-rule">比赛规则:{{golfData.tournamentRule === 0 ? '一般规则' : (golfData.tournamentRule === 1 ? '大流氓' : '小流氓')}}</text>
-			<view class="flex flex-between align-center golf-scoreInfo">
+			<view class="flex flex-between align-center golf-scoreInfo" style="position: relative;">
 				<!-- <view class="golf-share">
 				</view> -->
 				<view class="golf-siteInfo" style="text-align: left;">
@@ -22,12 +22,22 @@
 					<view class="golf-date">周{{"日一二三四五六".charAt(new Date(golfData.teeTime.split(' ')[0]).getDay())}}
 						{{golfData.teeTime}}</view>
 				</view>
+				<view @click="onlookers" style="text-align: right; position: relative;left: 15vw;">
+					<image class="golf-scoring" src="/static/image/onlookers-list.png"></image>
+					<text class="golf-shareText">围观</text>
+					<view class="" style="position: absolute; top: -2vw; right: -1.5vw; color: #ffffff; font-size: 3vw; background-color: red;border-radius: 10rpx;padding: 0 1vw;">
+						{{gallerNumber}}
+					</view>
+				</view>
 				<view @click="toScoreDetail" v-if="tournamentStatus > 0">
 					<image class="golf-scoring" src="/static/image/date.png"></image>
 					<text class="golf-shareText">计分卡</text>
 				</view>
 			</view>
 			<view class="golf-scoringPk">
+				<view class="password" v-if="current === 1 && golfTournament.isControlLike == 1">
+					点赞密码: {{golfTournament.likePwd}} 密码请勿泄露给无关人员
+				</view>
 				<view v-if="current === 0 && tableData.length>0">
 					<p-table :tableData="tableData" :firstHole="firstHole" :scoreHole="scoreHole" @setCore="setCore" align="center"></p-table>
 				</view>
@@ -37,6 +47,7 @@
 				<view class="addPlayer" @click="addGolfers" v-if="type === 1 && current === 0 && tableData.length < 4 && tournamentStatus < 1">
 					添加球手
 				</view>
+
 				<view class="text" v-if="tableData.length<=1 && current === 1">
 					<view class="buttom" @click="addPK" v-if="type === 1">
 						添加PK
@@ -166,6 +177,8 @@
 				messageType: 'error', //消息提示框类型
 				message: '', //消息提示框内容
 				share: true, //围观分享和球手分享的区分值 true是围观分享 false是球手分享
+				gallerNumber: 0, //围观人数
+				golfTournament: null, //储存比赛数据
 			}
 		},
 		watch: {},
@@ -184,6 +197,19 @@
 						path: '/pages/index/index?golfTournamentId=' + this.golfTournamentId
 					}
 				}
+			}else{
+				return {
+					title: '快来观战吧！',
+					path: '/pages/onlooker/onlooker?golfTournamentId=' + this.golfTournamentId
+				}
+				// return {
+				// 	title: '太友邀请你一起打球',
+				// 	path: '/pages/index/index',
+				// }
+				// return {
+				// 	title: '分享太友',
+				// 	path: '/pages/index/index'
+				// }
 			}
 		},
 		onLoad(option) {
@@ -221,6 +247,12 @@
 			}, 5000)
 		},
 		methods: {
+			//进入围观列表页面
+			onlookers() {
+				uni.navigateTo({ //跳入邀请比赛球手
+					url: '/pages/onlookerList/onlookerList?golfTournamentId=' + this.golfTournamentId
+				});
+			},
 			//围观分享和球手分享的区分值
 			sharingMethod(i) {
 				this.share = i;
@@ -492,7 +524,8 @@
 					data: res
 				} = await this.$api.pTable.scoreCard({
 					data: {
-						golfTournamentId: this.golfTournamentId
+						golfTournamentId: this.golfTournamentId,
+						golfGalleryId: uni.getStorageSync('golfGalleryId')
 					}
 				})
 				if (res.code === 0) {
@@ -509,7 +542,6 @@
 						}
 						this.scoreHole = arr
 					}
-
 					// 获取昵称组合
 					let str = []
 					for (let val of this.tableData) {
@@ -519,6 +551,8 @@
 					this.golfData.courseName = res.data.golfCourse.courseName
 					this.golfData.teeTime = res.data.golfTournament.teeTime
 					this.golfData.tournamentRule = res.data.golfTournament.tournamentRule
+					this.golfTournament = res.data.golfTournament;
+					this.gallerNumber = res.data.gallerNumber;
 					// this.golfListNull = res.data.records
 				}
 			},
@@ -699,7 +733,20 @@
 	}
 
 	.golf-scoringPk {
-		padding-left: 24rpx;
+		padding: 0 24rpx;
+
+		.password {
+			height: 7.2vw;
+			background-color: #000000;
+			border-radius: 1.07vw;
+			opacity: 0.25;
+			text-indent: 1em;
+			font-size: 2.93vw;
+			color: #ffffff;
+			line-height: 7.2vw;
+			text-align: left;
+			margin-top: 8vw;
+		}
 
 		.addPlayer {
 			margin-top: 20rpx;
@@ -714,8 +761,8 @@
 
 		.text {
 			.buttom {
+				margin: auto;
 				margin-top: 30rpx;
-				margin-right: 24rpx;
 				height: 80rpx;
 				border-radius: 10rpx;
 				color: #ffffff;

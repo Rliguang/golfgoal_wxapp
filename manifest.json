@@ -1,5 +1,5 @@
 {
-    "name" : "gh_772f7759b2a1",
+    "name" : "gh_d62b9c5638ff",
     "appid" : "__UNI__7B586DF",
     "description" : "",
     "versionName" : "1.0.0",
@@ -42,7 +42,7 @@
     },
     "quickapp" : {},
     "mp-weixin" : {
-        "appid" : "wx43b192d3828e3168",
+        "appid" : "wxc8ed7233288c8775",
         "setting" : {
             "urlCheck" : false,
             "es6" : true,

@@ -4,8 +4,7 @@
 		<view class="golf-searchTopBox">
 			<view class="golf-searchBoxRadius flex align-center">
 				<image src="../../static/image/search.png" mode="" class="golf-searchImg"></image>
-				<input class="golf-searchInput" type="search" v-model="ipt" @confirm="searchNow($event)" placeholder="请输入球场名字"
-				 placeholder-class="placeholderStyle"></input>
+				<input class="golf-searchInput" type="search" v-model="ipt" @confirm="searchNow($event)" placeholder="请输入球场名称"></input>
 			</view>
 		</view>
 		<!-- 搜索框 end -->
@@ -14,7 +13,8 @@
 		<view class="container">
 			<view class="golf-siteInfo" v-for="(item,index) in golfCourseList" :key="index" @click="bindSiteList(index)">
 				<view class="flex flex-between">
-					<view class="golf-site">{{item.courseName}}<!-- <text>最近去过</text> --></view>
+					<view class="golf-site">{{item.courseName}}<!-- <text>最近去过</text> -->
+					</view>
 					<!-- <view class="golf-distance">7.1KM</view> -->
 				</view>
 				<!-- <view class="golf-line flex flex-start align-center">
@@ -48,7 +48,9 @@
 				const {
 					data: res
 				} = await this.$api.course.chooseEndsRequest({
-					data: {courseName: courseName}
+					data: {
+						courseName: courseName
+					}
 				})
 				if (res.code === 0) {
 					this.golfCourseList = res.data.records
@@ -122,7 +124,11 @@
 		line-height: 60rpx;
 		margin-left: 10rpx;
 		background-color: #0bcc5e;
-		color: #fff;
+		color: #FFFFFF;
+	}
+
+	.golf-searchInput::-webkit-input-placeholder {
+		color: #FFFFFF;
 	}
 
 	.golf-siteInfo {

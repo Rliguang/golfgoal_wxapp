@@ -24,7 +24,7 @@
 			</view>
 			<view class="tbody" v-for="(item, index) in tableData" :key="index">
 				<view class="col" v-for="(item1, index1) in item.holeScoreList" :key="index1" @click="setScore(item1)">
-					<view class="row" :style="{textAlign:align}">
+					<view class="row" :style="{textAlign:align}" style="position: relative;">
 						<view v-if="Number(item1.hit) > 0">
 							<view v-if="item1.holeNo>0">
 								<view class="bird" v-if="item1.handicap==0">
@@ -40,7 +40,7 @@
 									{{ item1.handicap}}
 								</view>
 							</view>
-							<view v-else>
+							<view v-else >
 								<view class="bird" v-if="item1.handicap==0">
 									{{ item1.handicap}}
 								</view>
@@ -53,9 +53,22 @@
 								<view class="birdd" v-if="item1.handicap < -1">
 									{{ item1.handicap}}
 								</view>
+								<view style="position: absolute; font-size: 20rpx; color: #000000;top: -25rpx;right: 5rpx;">
+									{{item1.hit}}
+								</view>
 							</view>
 						</view>
-						<text style="color: #999999;" v-else>{{ item1.teeDistance}}</text>
+						<view style="color: #999999;" v-else>
+							<view v-if="item1.holeNo<=0">
+								{{ item1.teeDistance }}
+								<view style="position: absolute; font-size: 20rpx; color: #000000;top: -25rpx;right: 5rpx;">
+									{{item1.hit}}
+								</view>
+							</view>
+							<view v-else>
+								{{ item1.teeDistance }}
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>

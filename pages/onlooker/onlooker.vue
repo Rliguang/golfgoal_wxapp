@@ -40,7 +40,7 @@
 						</view>
 						<view class="onLine" v-for="(item3, index3) in cardList.golferScoreModelList" :key="index3">
 							<view class="onePieces" v-for="(item4, index4) in item3.holeScoreList[index]" :key="index4">
-								<view class="row" :style="{textAlign:align}">
+								<view class="row" :style="{textAlign:align}" style="position: relative;">
 									<view v-if="item4.holeNo>0">
 										<view class="bird" v-if="item4.handicap==0&&item4.hit==0">
 											-
@@ -49,7 +49,7 @@
 											{{ item4.handicap}}
 										</view>
 										<view class="bird birdc" v-if="item4.handicap>0">
-											+{{ item4.handicap}} 
+											+{{ item4.handicap}}
 										</view>
 										<view class="bird birda" v-if="item4.handicap == -1">
 											{{ item4.handicap}}
@@ -60,16 +60,19 @@
 									</view>
 									<view v-else>
 										<view class="bird" v-if="item4.handicap==0">
-											{{ item4.handicap}} 
+											{{ item4.handicap}}
 										</view>
 										<view class="birdc" v-if="item4.handicap>0">
-											+{{ item4.handicap}} 
+											+{{ item4.handicap}}
 										</view>
 										<view class="birdd" v-if="item4.handicap == -1">
 											{{ item4.handicap}}
 										</view>
 										<view class="birdd" v-if="item4.handicap < -1">
 											{{ item4.handicap}}
+										</view>
+										<view style="position: absolute; font-size: 20rpx; color: #000000;top: 10rpx;right: 5rpx;">
+											{{item4.hit}}
 										</view>
 									</view>
 									<!-- <text>{{item4.handicap}}</text> -->
@@ -81,6 +84,15 @@
 			</view>
 		</view>
 		<view class="">
+			<view class="password-the-lock" v-if="currentCanLike==1">
+				PK已解锁，密码请勿泄露给无关人员
+			</view>
+			<view class="password-shut" @click="popupWindowState = true" v-if="currentCanLike === 0">
+				本局比赛PK已加密
+				<view class="">
+					输入点赞密码>>
+				</view>
+			</view>
 			<view class="golf-title flex align-center flex-between">
 				本局PK
 			</view>
@@ -89,7 +101,7 @@
 					<text>{{item.pkTitle}}</text>
 					<!-- <text class="golf-adjust align-center" v-if="tournamentStatus == 0" @click="toLike(item.golfTournamentPkId,item.golfTournamentGalleryId)">参与点赞</text> -->
 				</view>
-				<view @click="toDetail(item.golfTournamentPkId)" class="middle">
+				<view @click="toDetail(item.golfTournamentPkId)" v-if="item.pkType == 0" class="middle">
 					<block v-for="(items,index) in item.groupModelList" :key="index" class="">
 						<view v-for="(info, index) in items.golfTournamentGalleryList" :key="index" class="">
 							<image class="headImgBorder" :src="info.avatar?info.avatar:'../../static/image/mine_0.png'" mode=""></image>
@@ -99,6 +111,15 @@
 					</block>
 					<uni-icons type="arrowright" :color="moreColor" size="20" />
 				</view>
+				<view @click="toDetail(item.golfTournamentPkId)" v-if="item.pkType == 1" class="middle catch_bird">
+					<view>
+						{{item.birdsNum}}.5
+					</view>
+					<view class="">
+						次抓鸟
+					</view>
+					<uni-icons style="color: #000000; position: absolute; right: 0;" type="arrowright" :color="moreColor" size="20" />
+				</view>
 			</view>
 			<view v-if="likeList.length == 0" class="empty-pages">
 				暂无PK，等待发起人添加PK
@@ -106,6 +127,25 @@
 		</view>
 		<view class="getAuth" v-if="authBool">
 			<button type="primary" open-type="getUserInfo" @getuserinfo='getuserinfo' @click="getUser">点击授权</button>
+		</view>
+		
+		<view class="popup-window" v-if="popupWindowState">
+			<view class="editPassword">
+				<view class="name">
+					点赞密码通过创建者获得
+				</view>
+				<view class="input-box">
+					<input class="uni-input" v-model="thumbUpPassword" focus placeholder="请输入六位数字密码" />
+				</view>
+				<view class="keys">
+					<view class="cancel" @click="password(false)">
+						取消
+					</view>
+					<view class="determine" @click="password(true)">
+						确定
+					</view>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -149,7 +189,9 @@
 				tournamentStatus: "", //当前比赛状态码
 				golfCourse: "",
 				golfTournament: "",
-				
+				currentCanLike: 0, //当前解锁状态 0未解锁 1已解锁
+				popupWindowState: false, //密码弹窗状态
+				thumbUpPassword: "", //密码
 			};
 		},
 		watch: {},
@@ -169,19 +211,60 @@
 						that.getTournamentGallery();
 					}
 				}
-			}) 
+			})
 		},
 		onShow() {
-
 			this.scordCard();
 			this.spgetPkList();
 		},
 		methods: {
-			refresh () {
+			password(is) {
+				if (is) {
+					console.log(this.thumbUpPassword)
+					if(this.thumbUpPassword.length == 6){
+						this.$api.api.checkLikePasswd({
+							data: {
+								likePasswd: this.thumbUpPassword,
+								golfGalleryId: uni.getStorageSync('golfGalleryId'),
+								golfTournamentId: this.golfTournamentId
+							}
+						}).then(res => {
+							if(res.data.data == true){
+								//成功
+								uni.showToast({
+									title: '解锁成功',
+									duration: 2000,
+									icon: "none"
+								});
+								this.refresh()
+								this.popupWindowState = false;
+							}else{
+								//失败
+								uni.showToast({
+									title: '密码错误',
+									duration: 2000,
+									icon: "none"
+								});
+								this.thumbUpPassword = ''
+							}
+						})
+					}else{
+						uni.showToast({
+							title: '密码必须为六位数字',
+							duration: 2000,
+							icon: "none"
+						});
+						this.thumbUpPassword = ''
+					}
+				}else{
+					this.popupWindowState = false;
+				}
+			},
+			refresh() {
 				this.scordCard();
 				this.spgetPkList();
 			},
-			getUser () {
+			getUser() {
 				new Promise(resolve => {
 					uni.getProvider({ //获取设备权限信息
 						service: 'oauth',
@@ -190,7 +273,7 @@
 						}
 					})
 				}).then(res => {
-					
+
 					uni.showLoading({
 						title: '正在加载中'
 					})
@@ -257,8 +340,9 @@
 								data: res.data.golfGalleryId,
 							});
 							this.authBool = false
-								// 这里进行绑定add
-								this.bindGall()
+							// 这里进行绑定add
+							this.bindGall()
+							this.refresh()
 						}
 					})
 				})
@@ -272,44 +356,48 @@
 						golfTournamentId: this.golfTournamentId,
 					}
 				}).then(res => {
-					if(res.data.data.tournamentIdentity == 1){
+					if (res.data.data.tournamentIdentity == 1) {
 						//球手 
-						
-							uni.showModal({
-							    title: '提示',
-							    content: '您是球手，是否跳转记分页面',
-							    success: function (res) {
-							        if (res.confirm) {
-										//初建项目 创建者进入
-										uni.navigateTo({ //跳入记分卡
-											url: '/pages/score/score?golfTournamentId=' + _this.golfTournamentId + '&type=' + 2
-										});
-							        } else if (res.cancel) {
-							        }
-							    }
-							});
-					}else if(res.data.data.isOrganizer == 1){
+
+						uni.showModal({
+							title: '提示',
+							content: '您是球手，是否跳转记分页面',
+							success: function(res) {
+								if (res.confirm) {
+									//初建项目 创建者进入
+									uni.navigateTo({ //跳入记分卡
+										url: '/pages/score/score?golfTournamentId=' + _this.golfTournamentId + '&type=' + 2
+									});
+								} else if (res.cancel) {}
+							}
+						});
+					} else if (res.data.data.isOrganizer == 1) {
 						//创建者
 						uni.showModal({
-						    title: '提示',
-						    content: '您是创建者，是否跳转记分页面',
-						    success: function (res) {
-						        if (res.confirm) {
+							title: '提示',
+							content: '您是创建者，是否跳转记分页面',
+							success: function(res) {
+								if (res.confirm) {
 									//初建项目 创建者进入
 									uni.navigateTo({ //跳入记分卡
 										url: '/pages/score/score?golfTournamentId=' + _this.golfTournamentId + '&type=' + 1
 									});
-						        } else if (res.cancel) {
-						        }
-						    }
+								} else if (res.cancel) {}
+							}
 						});
 					}
+					this.refresh()
 				})
 			},
 			toDetail(id) {
-				uni.navigateTo({
-					url: '/pages/addPk/pkDetail?id=' + id
-				});
+				if(this.currentCanLike == 1){
+					uni.navigateTo({
+						url: '/pages/addPk/pkDetail?id=' + id
+					});
+				}else{
+					this.popupWindowState = true;
+				}
+				
 			},
 			bindGall() {
 				this.$api.match.bindGallerInvite({
@@ -366,7 +454,7 @@
 							let arr4 = []
 							// item.holeScoreList=this.group(item.holeScoreList,11)
 							for (let val of item.holeScoreList) {
-									if (val.isOut == 0 && val.holeNo != 0 && val.holeNo != -1) {
+								if (val.isOut == 0 && val.holeNo != 0 && val.holeNo != -1) {
 									arr3.push(val)
 								} else if (val.isOut == 1 || val.holeNo == 0) {
 									arr4.push(val)
@@ -392,11 +480,13 @@
 				this.$api.score
 					.spgetPkList({
 						data: {
+							golfGalleryId: uni.getStorageSync('golfGalleryId'),
 							golfTournamentId: this.golfTournamentId
 						}
 					})
 					.then(res => {
-						this.tournamentStatus = res.data.data.golfCardModel.golfTournament.tournamentStatus;//当前比赛状态码
+						this.currentCanLike = res.data.data.currentCanLike; //当前解锁状态 0未解锁 1已解锁
+						this.tournamentStatus = res.data.data.golfCardModel.golfTournament.tournamentStatus; //当前比赛状态码
 						this.golfCourse = res.data.data.golfCardModel.golfCourse
 						this.golfTournament = res.data.data.golfCardModel.golfTournament
 						this.likeList = res.data.data.pkLikeModelList
@@ -420,6 +510,102 @@
 	#PKmodel {
 		width: 42rpx;
 		height: 26rpx;
+	}
+	
+	.popup-window {
+		width: 100vw;
+		background-color: rgba(0, 0, 0, 0.5);
+		height: 100vh;
+		position: fixed;
+		top: 0;
+		left: 0;
+		.editPassword {
+			width: 74.67vw;
+			height: 37.47vw;
+			background-color: #ffffff;
+			border-radius: 2.13vw;
+			font-size: 4.27vw;
+			color: #333333;
+			margin: 30vh auto;
+	
+			.name {
+				height: 13.47vw;
+				line-height: 13.47vw;
+				text-align: center;
+			}
+	
+			.input-box {
+				width: 68.27vw;
+				height: 9.07vw;
+				background-color: #eeeeee;
+				border-radius: 0.53vw;
+				margin: auto;
+	
+				.uni-input {
+					height: 9.07vw;
+					padding: 0 2vw;
+					line-height: 9.07vw;
+					margin: 0;
+				}
+			}
+	
+			.keys {
+				height: 14.93vw;
+				position: relative;
+	
+				>view {
+					width: 16vw;
+					height: 6.4vw;
+					line-height: 6.4vw;
+					text-align: center;
+					background-color: #cccccc;
+					border-radius: 0.53vw;
+					color: #ffffff;
+					font-size: 3.73vw;
+					position: absolute;
+					top: 4.27vw;
+					left: 7.4vw;
+				}
+	
+				.determine {
+					background-color: #0dd561;
+					left: 51.2vw;
+				}
+			}
+		}
+	
+	
+	}
+	
+	.password-the-lock {
+		width: 93.6vw;
+		height: 7.2vw;
+		background-color: #000000;
+		border-radius: 1.07vw;
+		opacity: 0.25;
+		font-size: 2.93vw;
+		color: #ffffff;
+		line-height: 7.2vw;
+		margin: 7vw auto;
+		text-indent: 1em;
+	}
+
+	.password-shut {
+		width: 93.6vw;
+		height: 7.2vw;
+		background-color: #0dd561;
+		border-radius: 1.07vw;
+		font-size: 2.93vw;
+		color: #ffffff;
+		line-height: 7.2vw;
+		text-indent: 1em;
+		position: relative;
+		margin: 7vw auto;
+		>view {
+			position: absolute;
+			top: 0;
+			right: 2vw;
+		}
 	}
 
 	.getAuth {
@@ -883,30 +1069,60 @@
 		font-weight: 400;
 		color: rgba(255, 255, 255, 1);
 	}
-	.bird{
+
+	.bird {
 		width: 40rpx;
 		height: 40rpx;
 		margin: 25rpx auto;
 		line-height: 40rpx;
 		text-align: center;
 	}
-	.birda{
-		color: red; background: url(../../static/image/x.png); 
+
+	.birda {
+		color: red;
+		background: url(../../static/image/x.png);
 		background-size: 100%;
 	}
-	.birdb{
-		color: red; background: url(../../static/image/xx.png); 
+
+	.birdb {
+		color: red;
+		background: url(../../static/image/xx.png);
 		background-size: 100%;
 	}
-	.birdc{
+
+	.birdc {
 		color: #007AFF;
 	}
-	.birdd{
+
+	.birdd {
 		color: red;
 	}
-	.empty-pages{
+
+	.empty-pages {
 		font-size: 24rpx;
 		text-align: center;
 		margin-top: 100rpx;
+	}
+
+	.catch_bird {
+		font-size: 4.8vw;
+		color: #999999;
+		height: 6.4vw;
+		position: relative;
+
+		>view:nth-child(1) {
+			font-size: 8vw;
+			color: #333333;
+			font-weight: 600;
+			right: 48vw;
+			text-align: right;
+		}
+
+		>view {
+			width: 15vw;
+			position: absolute;
+			right: 31vw;
+		}
+
 	}
 </style>

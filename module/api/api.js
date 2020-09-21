@@ -38,7 +38,84 @@ export default {
 			url: '/api/biz/golf/mine/lookLogPage',
 			method: 'post'
 		}, params)
-	}
+	},
+	//添加PK  打鸟数PK
+	createBirdsPk(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/pk/createBirdsPk',
+			method: 'post'
+		}, params)
+	},
+	//添加PK  球洞PK
+	createHitsPk(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/pk/createHitsPk',
+			method: 'post'
+		}, params)
+	},
+	//获取一个指定的高尔夫场地
+	getOneCourse(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/scheduleCourse/getOneCourse',
+			method: 'post'
+		}, params)
+	},
+	//获取一个指定的高尔夫场地
+	getCourseAlbumList(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/scheduleCourse/getCourseAlbumList',
+			method: 'post'
+		}, params)
+	},
+	
+	//获取围观群众列表
+	tournamentGalleries(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/scoreCard/tournamentGalleries',
+			method: 'post'
+		}, params)
+	},
+	
+	//获取围观群众列表
+	checkLikePasswd(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/pk/checkLikePasswd',
+			method: 'post'
+		}, params)
+	},
+	//活动订单预生成
+	activityPreOrder(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/activity/activityPreOrder',
+			method: 'post'
+		}, params)
+	},
+	
+	//订场下单付款 微信验证
+	activityUnifiedpay(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/activity/activityUnifiedpay',
+			method: 'post'
+		}, params)
+	},
+	//获取活动列表
+	activityList(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/activity/list',
+			method: 'post'
+		}, params)
+	},
+	//获取活动详情
+	getOneActivity(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/activity/getOneActivity',
+			method: 'post'
+		}, params)
+	},
+	
+	
+	
+	
 	
 	
 };

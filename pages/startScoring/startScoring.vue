@@ -25,16 +25,74 @@
 			</picker>
 		</view>
 		<view class="golf-title">
+			PK设置
+		</view>
+		<view class="golf-setThe">
+			<view class="radio">
+				<label class="radio" @click="whetherThumb" >
+					<checkbox v-model="thumbPassword" color="#0dd561" style="transform:scale(0.7)" />
+					开启点赞密码验证 
+				</label>
+				<!-- <image @click="whetherThumb" v-show="thumbUpPassword==''" src="../../static/image/radio.png" mode=""></image>
+				<image @click="whetherThumb" v-show="thumbUpPassword!=''" src="../../static/image/radio-x.png" mode=""></image> -->
+				<!-- 开启点赞密码验证 -->
+			</view>
+			<!-- <label class="radio">
+				<checkbox   color="#0dd561" style="transform:scale(0.7)" /> </label> -->
+			<view class="imgs"  @click="passwordPrompt = true">
+				<image src="../../static/image/question.png" mode=""></image>
+				围观用户需输入密码才可进行点赞
+			</view>
+			<view class="password" @click="isThumbPassword = true" v-if="thumbPassword">
+				{{thumbUpPassword}}
+				<image src="../../static/image/xiugai.png" mode=""></image>
+			</view>
+			<view class="golf-title">
+			</view>
 			比赛规则
 		</view>
 		<view class="golf-rule">
 			<evan-radio-group class="golf-ruleRadio" v-model="ruleData">
-				<evan-radio ﻿v-for="item in ruleList" :key="item.value" style="margin-right: 60rpx;" primary-color="#0dd561" :label="item.value" @change="bindRule(item.value)">{{item.label}}</evan-radio>
+				<evan-radio ﻿v-for="item in ruleList" :key="item.value" style="margin-right: 60rpx;" primary-color="#0dd561" :label="item.value"
+				 @change="bindRule(item.value)">{{item.label}}</evan-radio>
 			</evan-radio-group>
 		</view>
 		<view class="golf-createGames">
 			<button type="primary" @click="bindNext">下一步</button>
 		</view>
+
+		<view class="mask" v-if="isThumbPassword">
+			<view class="editPassword">
+				<view class="name">
+					编辑密码
+				</view>
+				<view class="input-box">
+					<input class="uni-input" v-model="thumbUpPassword" focus placeholder="请输入六位数字密码!" />
+				</view>
+				<view class="keys">
+					<view class="cancel" @click="password(false)">
+						取消
+					</view>
+					<view class="determine" @click="password(true)">
+						确定
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="mask" v-if="passwordPrompt">
+			<view class="prompt">
+				<image src="../../static/image/prompt.png" mode=""></image>
+				<view class="text">
+					设置密码后，围观群众查看pk详情前需输入该密码。
+				</view>
+				<view class="determine" @click="passwordPrompt = false">
+					我知道了
+				</view>
+			</view>
+		</view>
+
+
 	</view>
 </template>
 
@@ -74,14 +132,19 @@
 					}
 				],
 				nextGamesData: null,
+				thumbPassword: false, //是否传入点赞密码
+				thumbUpPassword: "123456", //密码
+				passwordPrompt: false, //是否展现提示弹窗
+				isThumbPassword: false, //是否展现密码输入弹窗
 			}
 		},
-		onShareAppMessage(res) {
+		onShow() {
 
 		},
 		created() {
 			this.getNowDate() //获取当前时间
 		},
+
 		mounted() {
 
 		},
@@ -92,16 +155,43 @@
 
 		},
 		methods: {
+			password(is) {
+				if (is) {
+					if(this.thumbUpPassword.length !== 6){
+						uni.showToast({
+							title: '密码必须为六位数字',
+							duration: 2000,
+							icon: "none"
+						});
+						this.thumbUpPassword = '123456'
+					}
+				}else{
+					this.thumbUpPassword = '123456'
+				}
+				this.isThumbPassword = false;
+			},
+			whetherThumb() {
+				this.thumbPassword = !this.thumbPassword;
+			},
 			//点击下一步
 			bindNext() {
 				let courseDefultInfo = uni.getStorageSync('courseDefultInfo');
 				let golfGalleryId = uni.getStorageSync('golfGalleryId');
-				this.nextGamesData = {
-					teeTime: this.date + " " + this.time + ":00",
-					golfCourseId: Number(courseDefultInfo.golfCourseId), //球场ID
-					organizerId: Number(golfGalleryId),
-					teamNumber: this.index,
-					tournamentRule: this.ruleData,
+				let isControlLike = null;
+				if (!this.thumbPassword) {
+					//0为不点加锁
+					isControlLike = 0;
+				} else {
+					if (this.thumbUpPassword*1+''.length == 6) {
+						isControlLike = 1;
+					} else {
+						uni.showToast({
+							title: '密码必须为六位数字',
+							duration: 2000,
+							icon: "none"
+						});
+						return false
+					}
 				}
 
 				this.$api.api.createTournamentCreate({
@@ -111,20 +201,23 @@
 						organizerId: Number(golfGalleryId),
 						teamNumber: this.index,
 						tournamentRule: this.ruleData,
+						isControlLike: isControlLike,
+						likePwd: this.thumbUpPassword,
 					}
 				}).then(res => {
-					if(res.data.code == 0){
+					if (res.data.code == 0) {
 						uni.setStorage({
 							key: "golfTournamentGalleryId",
 							data: res.data.data.currentTournamentGallery.golfTournamentGalleryId
 						})
 						uni.navigateTo({
-							url: "/pages/score/score?golfTournamentId=" + res.data.data.currentTournamentGallery.golfTournamentId + '&type=' + 1
+							url: "/pages/score/score?golfTournamentId=" + res.data.data.currentTournamentGallery.golfTournamentId +
+								'&type=' + 1
 						})
-					}else{
-						
+					} else {
+
 					}
-					
+
 				})
 			},
 			//球赛规则
@@ -158,7 +251,152 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="less">
+	.password{
+		font-size: 8vw;
+		text-align: center;
+		color: #333333;
+		border-bottom: 1px #eeeeee solid;
+		padding-bottom: 2vw;
+		margin-bottom: 4vw;
+		image{
+			width: 4.27vw;
+			height: 4.27vw;
+		}
+	}
+	.mask {
+		width: 100vw;
+		background-color: rgba(0, 0, 0, 0.5);
+		height: 100vh;
+		position: fixed;
+		top: 0;
+		left: 0;
+		.prompt {
+			width: 74.67vw;
+			height: 86.53vw;
+			background-color: #ffffff;
+			border-radius: 2.13vw;
+			margin: 20vh auto;
+			text-align: center;
+
+			image {
+				width: 70.4vw;
+				height: 50.4vw;
+				margin: 2.13vw;
+				border-radius: 1.07vw;
+				border-radius: 1.07vw;
+			}
+
+			.text {
+				padding: 4.8vw 3.87vw;
+				height: 8.67vw;
+				line-height: 4vw;
+				font-size: 4vw;
+				color: #333333;
+			}
+
+			.determine {
+				border-top: 1px solid #e5e5e5;
+				height: 10vw;
+				line-height: 10vw;
+				font-size: 4.8vw;
+				color: #1677ff;
+			}
+		}
+
+		.editPassword {
+			width: 74.67vw;
+			height: 37.47vw;
+			background-color: #ffffff;
+			border-radius: 2.13vw;
+			font-size: 4.27vw;
+			color: #333333;
+			margin: 30vh auto;
+
+			.name {
+				height: 13.47vw;
+				line-height: 13.47vw;
+				text-align: center;
+			}
+
+			.input-box {
+				width: 68.27vw;
+				height: 9.07vw;
+				background-color: #eeeeee;
+				border-radius: 0.53vw;
+				margin: auto;
+
+				.uni-input {
+					height: 9.07vw;
+					padding: 0 2vw;
+					line-height: 9.07vw;
+					margin: 0;
+				}
+			}
+
+			.keys {
+				height: 14.93vw;
+				position: relative;
+
+				>view {
+					width: 16vw;
+					height: 6.4vw;
+					line-height: 6.4vw;
+					text-align: center;
+					background-color: #cccccc;
+					border-radius: 0.53vw;
+					color: #ffffff;
+					font-size: 3.73vw;
+					position: absolute;
+					top: 4.27vw;
+					left: 7.4vw;
+				}
+
+				.determine {
+					background-color: #0dd561;
+					left: 51.2vw;
+				}
+			}
+		}
+
+
+	}
+
+	.golf-setThe {
+		.radio {
+			height: 14vw;
+			line-height: 14vw;
+
+			image {
+				width: 4vw;
+				height: 4vw;
+				margin-top: 2vw;
+				margin-right: 2vw;
+			}
+		}
+
+		.imgs {
+			height: 9vw;
+			line-height: 9vw;
+			background-color: #0dd561;
+			border-radius: 1vw;
+			font-size: 4vw;
+			color: #ffffff;
+			padding-left: 10vw;
+			position: relative;
+
+			image {
+				width: 4vw;
+				height: 4vw;
+				position: absolute;
+				top: 2.7vw;
+				left: 3.2vw;
+			}
+
+			margin-bottom: 7.7vw;
+		}
+	}
+
 	.golf-createGames {
 		width: 100%;
 		position: fixed;
@@ -245,5 +483,4 @@
 	.golf-rule {
 		margin: 24rpx 0 56rpx 0;
 	}
-	
 </style>

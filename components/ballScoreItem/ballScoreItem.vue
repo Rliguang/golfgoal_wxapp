@@ -11,7 +11,7 @@
 						<text>{{item.pkTitle}}</text>
 						<!-- <text class="golf-adjust align-center" v-if="tournamentStatus == 0" @click="toLike(item.golfTournamentPkId,item.golfTournamentGalleryId)">参与点赞</text> -->
 					</view>
-					<view @click="toDetail(item.golfTournamentPkId)" class="middle">
+					<view @click="toDetail(item.golfTournamentPkId)" v-if="item.pkType == 0" class="middle">
 						<block v-for="(items,subscript) in item.groupModelList" :key="index" class="">
 							<view v-if="subscript == 0" v-for="(info, index) in items.golfTournamentGalleryList" :key="index" class="">
 								<image class="headImgBorder" style="border:#007AFF 1px solid;" :src="info.avatar?info.avatar:'../../static/image/mine_0.png'" mode=""></image>
@@ -24,6 +24,15 @@
 							<image class="PKmodel" v-if="subscript+1<item.groupModelList.length" src="../../static/image/pk.png" mode=""></image>
 						</block>
 						<uni-icons type="arrowright" :color="moreColor" size="20" />
+					</view>
+					<view @click="toDetail(item.golfTournamentPkId)" v-if="item.pkType == 1" class="middle catch_bird">
+							<view>
+								{{item.birdsNum}}.5
+							</view>
+							<view class="">
+								次抓鸟
+							</view>
+							<uni-icons style="color: #000000; position: absolute; right: 0;" type="arrowright" :color="moreColor" size="20" />
 					</view>
 				</view>
 				<view class="prompt" v-if="likeList.length==0">
@@ -202,7 +211,8 @@
 				this.$api.score
 					.spgetPkList({
 						data: {
-							golfTournamentId: this.golfTournamentId
+							golfTournamentId: this.golfTournamentId,
+							golfGalleryId: uni.getStorageSync('golfGalleryId'),
 						}
 					})
 					.then(res => {
@@ -563,7 +573,7 @@
 			align-items: center;
 			justify-content: space-between;
 			border-bottom: 1rpx solid rgba(238, 238, 238, 1);
-
+			text-align: left;
 			image:nth-child(1) {
 				width: 42rpx;
 				height: 23rpx;
@@ -971,5 +981,24 @@
 		padding-top: 300rpx;
 		text-align: center;
 		font-size: 24rpx;
+	}
+	.catch_bird{
+		font-size: 4.8vw;
+		color: #999999;
+		height: 6.4vw;
+			position: relative;
+			>view:nth-child(1){
+				font-size: 8vw;
+				color: #333333;
+				font-weight: 600;
+				right: 48vw;
+				text-align: right;
+			}
+			>view{
+				width: 15vw;
+				position: absolute;
+				right: 31vw;
+			}
+			
 	}
 </style>

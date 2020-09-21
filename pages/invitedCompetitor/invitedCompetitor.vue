@@ -39,9 +39,6 @@
 				controlTiming: null
 			}
 		},
-		onShareAppMessage(res) {
-
-		},
 		onUnload(e){
 			clearInterval(this.controlTiming);
 		},

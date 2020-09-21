@@ -4,11 +4,19 @@
 			<view class="up">
 				{{pkTitle}}
 			</view>
-			<view class="title">
+			<view class="title" v-if="pkType == 0">
 				<view v-for="(item,index) in likeList" :key="index" class="">
 					<view v-for="(item1,index1) in item.groupGolferList" :key="index1" class="">
 						<image class="headImgBorder" :src="item1.avatar?item1.avatar:'../../static/image/mine_0.png'" mode=""></image>
 						<text>{{item1.nickname}}</text>
+					</view>
+				</view>
+				<image class="pkImg" src='../../static/image/pkimg.png'></image>
+			</view>
+			<view class="titlex" v-if="pkType == 1">
+				<view v-for="(item,index) in likeList" :key="index" class="">
+					<view>
+						<text>{{item.groupName}}</text>
 					</view>
 				</view>
 				<image class="pkImg" src='../../static/image/pkimg.png'></image>
@@ -51,7 +59,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="upButton">
+			<view class="upButton" v-if="pkType == 0">
 				<button type="default" @click="giveThumbUp(1)">
 					<image src="../../static/image/give.png" mode=""></image>
 					给蓝队点赞
@@ -59,6 +67,16 @@
 				<button type="default" @click="giveThumbUp(2)">
 					<image src="../../static/image/give.png" mode=""></image>
 					给红队点赞
+				</button>
+			</view>
+			<view class="upButton" v-if="pkType == 1">
+				<button type="default" @click="giveThumbUp(1)">
+					<image src="../../static/image/give.png" mode=""></image>
+					给小于点赞
+				</button>
+				<button type="default" @click="giveThumbUp(2)">
+					<image src="../../static/image/give.png" mode=""></image>
+					给大于点赞
 				</button>
 			</view>
 		</view>
@@ -106,7 +124,8 @@
 				love: 0, //爱心数
 				name: "",
 				groupNo: 0, //当前给哪个队添加  groupNo 1 为蓝 2为红
-				pkTitle: "" //PK标题
+				pkTitle: "" ,//PK标题
+				pkType: null
 			};
 		},
 		components: {
@@ -133,10 +152,18 @@
 				this.groupNo = i;
 				if (i == 1) {
 					//给蓝队点赞
-					this.name = "给蓝队点赞"
+					if(this.pkType == 0){
+						this.name = "给蓝队点赞"
+					}else{
+						this.name = "给小于点赞"
+					}
 				} else if (i == 2) {
 					//给红队点赞
-					this.name = "给红队点赞"
+					if(this.pkType == 0){
+						this.name = "给红队点赞"
+					}else{
+						this.name = "给大于点赞"
+					}
 				}
 			},
 			//点赞
@@ -216,6 +243,7 @@
 					})
 					.then(res => {
 						this.pkTitle = res.data.data.pkTitle
+						this.pkType = res.data.data.pkType
 						this.likeList = res.data.data.groupLikeList
 					});
 			},
@@ -225,11 +253,49 @@
 
 <style scoped lang="scss">
 	.up {
-		width: 702rpx;
-		margin: 33rpx auto;
+		width: 92vw;
+		margin: 33rpx 4vw;
 		font-size: 28rpx;
 	}
-
+	.titlex{
+		width: 702rpx;
+		height: 118rpx;
+		border-radius: 4px;
+		display: flex;
+		justify-content: space-between;
+		margin: auto;
+		margin-top: 33rpx;
+		margin-bottom: 24rpx;
+		position: relative;
+		.pkImg {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			display: block;
+			width: 100%;
+			z-index: -999;
+			height: 100%;
+		}
+		
+		view {
+			display: flex;
+			width: 80%;
+			justify-content: space-evenly;
+		
+			view {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				text {
+					font-size: 4.3vw;
+					color: rgba(255, 255, 255, 1);
+					display: inline-block;
+					text-align: center;
+				}
+			}
+		}
+	}
 	.title {
 		width: 702rpx;
 		height: 118rpx;
@@ -284,7 +350,7 @@
 
 	.contents {
 		width: 702rpx;
-		height: 650rpx;
+		height: 800rpx;
 		display: flex;
 		justify-content: space-between;
 		margin: auto;
@@ -298,70 +364,77 @@
 			flex-direction: column;
 
 			>view {
+				height: 17.8vw;
 				position: relative;
-			}
-
-			.text {
-				position: absolute;
-				left: 40rpx;
-			}
-
-			.top {
-				position: absolute;
-				top: -20rpx;
-				right: 20rpx;
-			}
-
-			.bottom {
-				position: absolute;
-				top: 20rpx;
-				right: 20rpx;
-			}
-
-			view {
-
-				height: 98rpx;
-				padding: 16rpx;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-
-				>text {
+				>text{
+					height: 17.8vw;
 					font-size: 36rpx;
 					font-family: PingFangSC-Semibold, PingFang SC;
 					font-weight: 600;
-					color: rgba(60, 126, 255, 1);
-					line-height: 50rpx;
+					color: #3c7eff;
+					line-height: 17.8vw;
+					margin-left: 2vw;
+					text-align: center;
 				}
-
-				view {
-					display: flex;
-					align-items: center;
-
-					.headImg {
-						width: 34rpx;
-						height: 34rpx;
+				.text {
+					width:16vw;
+					height: 17.8vw;
+					line-height: 17.8vw;
+					position: absolute;
+					left: 8vw;
+					top: 0;
+					white-space:nowrap;
+					text-overflow:ellipsis;
+					-o-text-overflow:ellipsis;
+					overflow:hidden;
+					image{
+						position: relative;
+						top: 1.5vw;
+						width: 4.53vw;
+						height: 4.53vw;
 					}
-
-					.likeImg {
-						width: 22rpx;
-						height: 22rpx;
-						margin-left: 17rpx;
+					>text{
+						position: relative;
+						line-height: 17.8vw;
+						font-size: 2.67vw;
+						color: #333333;
 					}
-
-					text {
-						display: block;
-						overflow: hidden;
-						/*溢出隐藏*/
-						text-overflow: ellipsis;
-						/*以省略号...显示*/
-						white-space: nowrap;
-						/*强制不换行*/
-						font-size: 20rpx;
-						font-family: PingFangSC-Regular, PingFang SC;
-						font-weight: 400;
-						color: rgba(51, 51, 51, 1);
+				}
+				.top {
+					width: 15vw;
+					height: 8.9vw;
+					line-height: 8.9vw;
+					position: absolute;
+					top: 0vw;
+					right: 2vw;
+					font-size: 2.67vw;
+					color: #333333;
+					text-align: right;
+					image{
+						width: 2.8vw;
+						height: 2.8vw;
+						margin-left: 2vw;
 					}
+				}
+				.bottom {
+					width: 15vw;
+					height: 8.9vw;
+					line-height: 8.9vw;
+					position: absolute;
+					top: 8.9vw;
+					right: 2vw;
+					font-size: 2.67vw;
+					color: #333333;
+					text-align: right;
+					image{
+						width: 2.8vw;
+						height: 2.8vw;
+						margin-left: 2vw;
+					}
+				}
+				image{
+					width: 100%;
+					height: 100%;
 				}
 			}
 		}
@@ -533,7 +606,7 @@
 		height: 80rpx;
 		width: 100%;
 		position: fixed;
-		bottom: 200rpx;
+		bottom: 80rpx;
 		display: flex;
 
 		button {
@@ -678,7 +751,7 @@
 
 	.popupWindow {
 		width: 100%;
-		height: 520rpx;
+		height: 500rpx;
 		position: fixed;
 		bottom: 0;
 		z-index: 999;
@@ -698,8 +771,8 @@
 
 			>view {
 				width: 400rpx;
-				height: 60rpx;
-				margin: 60rpx auto;
+				height: 90rpx;
+				margin: 45rpx auto;
 				display: flex;
 
 				>view {
@@ -707,12 +780,12 @@
 					height: 60rpx;
 					text-align: center;
 					color: #000000;
-					font-size: 60rpx;
+					font-size: 72rpx;
 				}
 
 				>image {
-					height: 60rpx;
-					width: 60rpx;
+					height: 87rpx;
+					width: 93rpx;
 				}
 			}
 		}
