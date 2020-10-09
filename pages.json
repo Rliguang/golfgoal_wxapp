@@ -138,9 +138,60 @@
 		}, {
 			"path": "pages/eventDetails/eventDetails",
 			"style": {
-				"navigationBarTitleText": "太友商会高尔夫邀请赛"
+				"navigationBarTitleText": "活动"
+			}
+		}, {
+			"path": "pages/orderInformation/orderInformation",
+			"style": {
+				"navigationBarTitleText": "订单信息"
+			}
+		}, {
+			"path": "pages/orderDetails/orderDetails",
+			"style": {
+				"navigationBarTitleText": "订单详情"
+			}
+		}, {
+			"path": "pages/orderList/orderList",
+			"style": {
+				"navigationBarTitleText": "订单列表",
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/submittedSuccessfully/submittedSuccessfully",
+			"style": {
+				"navigationBarTitleText": "提交成功"
+			}
+		}, {
+			"path": "pages/payForSuccess/payForSuccess",
+			"style": {
+				"navigationBarTitleText": "支付成功"
+			}
+		}, {
+			"path": "pages/coupon/coupon",
+			"style": {
+				"navigationBarTitleText": "优惠劵"
+			}
+		}, {
+			"path": "pages/scoring/scoring",
+			"style": {
+				"navigationBarTitleText": "计分"
+			}
+		}, {
+			"path": "pages/workshop/workshop",
+			"style": {
+				"navigationBarTitleText": "工坊"
+			}
+		}, {
+			"path": "pages/activitiesShare/activitiesShare",
+			"style": {
+				"navigationBarTitleText": "活动分享"
 			}
 		}
+		
+		
+		
+		
+
 
 	
 
@@ -167,10 +218,10 @@
 			"selectedIconPath": "static/image/home_1.png",
 			"text": "首页"
 		}, {
-			"pagePath": "pages/booking/booking",
-			"iconPath": "static/image/booking_0.png",
-			"selectedIconPath": "static/image/booking_1.png",
-			"text": "订场"
+			"pagePath": "pages/orderList/orderList",
+			"iconPath": "static/image/order_0.png",
+			"selectedIconPath": "static/image/order_1.png",
+			"text": "订单"
 		}, {
 			"pagePath": "pages/mine/mine",
 			"iconPath": "static/image/mine_0.png",

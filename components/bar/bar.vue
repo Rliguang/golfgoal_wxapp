@@ -1,8 +1,11 @@
 <template>
 	<view>
 		<view class="header" :style="{'height':titleBarHeight,'padding-top':statusBarHeight,'background-color': nav.bg}">
-			
-			<view class="iconfont leftArrow header-back weight homePage"  :style="{'border':nav.color}" @click="back"></view>
+			<view class="homePageText"  :style="{'border':nav.color}" @click="back">
+				<image src="../../static/image/homePage.png" mode=""></image>
+				&nbsp;首页
+			</view>
+			<!-- <view class="iconfont leftArrow header-back weight homePage"  :style="{'border':nav.color}" @click="back"></view> -->
 			<view class="header-title weight">{{nav.navTitle}}</view>
 		</view>
 		<view :style="{'height':titleBarHeight,'padding-top':statusBarHeight}"></view>
@@ -42,7 +45,7 @@
 	}
 </script>
 
-<style>
+<style scoped lang="less">
 	.header {
 		display: flex;
 		align-items: center;
@@ -55,7 +58,7 @@
 	.homePage{
 		width: 20rpx;
 		height: 20rpx;
-		background: url(../../static/image/homePage.png);
+		/* background: url(../../static/image/homePage.png); */
 		background-size: 100% 100%;
 		border-radius: 0 !important;
 		margin-left: 18rpx;
@@ -76,5 +79,18 @@
 		border-radius: 50%;
 	}
 	
+	.homePageText{
+		width: 15vw;
+		height: 6vw;
+		position: absolute;
+		left: 5vw;
+		top: 10vw;
+		font-size: 3.73vw;
+		color: #ffffff;
+		image{
+			width: 4vw;
+			height: 4vw;
+		}
+	}
 	
 </style>

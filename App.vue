@@ -84,4 +84,5 @@
 		border-radius: 50%;
 		margin: 6rpx;
 	}
+
 </style>

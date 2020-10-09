@@ -1,14 +1,26 @@
 <template>
 	<view class="container">
-		<!-- 新建比赛 start -->
-		<button class="golf-auth" type="primary" open-type="getUserInfo" @getuserinfo="getUserInfo" @click="golfLogin"
-		 hover-class="btn-hover">
-			开局记分
+		<button class="share" @click="activitiesShare">
+			<image src="https://dingqiang-golf.oss-cn-shenzhen.aliyuncs.com/coupon_invite.png" mode=""></image>
 		</button>
+		<view class="plate">
+			<view @click="jifen">
+				<image src="../../static/image/jifen.png" mode=""></image>
+				<view>计分</view>
+			</view>
+			<view @click="dingchang">
+				<image src="../../static/image/dingc.png" mode=""></image>
+				<view>订场</view>
+			</view>
+			<view @click="gongfang">
+				<image src="../../static/image/gongfang.png" mode=""></image>
+				<view>俱乐部</view>
+			</view>
+		</view>
 		<view class="golf-title">最近活动</view>
 		<view class="golf-content">
 			<!-- 活动列表 -->
-			<view class="list-activities" @click="eventDetails" v-for="value in activity">
+			<view class="list-activities" @click="eventDetails(value)" v-for="value in activity">
 				<view class="imgs">
 					<image v-if="value.mainUrl" :src="'https://dingqiang-golf.oss-cn-shenzhen.aliyuncs.com/'+value.coverUrl" mode=""></image>
 					<image v-else src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1600416514&di=65924f6720bbce9f5a68f8669fecfc88&src=http://a2.att.hudong.com/86/10/01300000184180121920108394217.jpg"
@@ -26,62 +38,6 @@
 				</view>
 			</view>
 		</view>
-		<!-- 新建比赛 end -->
-		<view class="golf-title">今日球局</view>
-		<view class="golf-content">
-			<!-- 列表 -->
-			<view class="" v-if="golfListNull.length!==0" v-for="(item,index) in golfListNull" :key="index">
-				<view class="list-box" @click="goGameDetail(item.golfTournamentId,item.currentTournamentGallery.golfTournamentGalleryId, item.currentTournamentGallery.isOrganizer, item.currentTournamentGallery.tournamentIdentity,item)">
-					<view class="top">
-						<view class="stadium-name">
-							{{item.golfCourse.courseName}}
-						</view>
-						<view class="delete" v-if="item.tournamentStatus===0" @click.stop="goGameDelete(item)">
-							<image src="../../static/image/delete.png" mode=""></image>
-							删除
-						</view>
-					</view>
-					<view class="content">
-						<view class="creator">
-							<image :src="item.organizer.avatar" mode=""></image>
-							{{item.tournamentName}}(创建者)
-						</view>
-						<view class="onlookers">
-							<image src="../../static/image/onlookers.png" mode=""></image>
-							当前围观:{{item.galleryNumber}}人
-						</view>
-					</view>
-					<view class="golfers">
-						<view class="golfers-box" v-for="value in item.golfTournamentGalleryList">
-							<image v-if="value.avatar" :src="value.avatar" mode=""></image>
-							<image v-else src="../../static/image/default.png" mode=""></image>
-							{{value.nickname}}
-						</view>
-						<view class="player-no" v-if="item.golfTournamentGalleryList.length == 0">
-							暂无球手
-						</view>
-					</view>
-					<view class="following">
-						<view class="time">
-							{{item.showTime}}
-						</view>
-						<view class="state" style="color: #FFCB1C;" v-if="item.tournamentStatus===0">待开始</view>
-						<view class="state" style="color: #0DD561;" v-if="item.tournamentStatus===1">进行中</view>
-						<view class="state" style="color: #FF3B30;" v-if="item.tournamentStatus===9">已结束</view>
-					</view>
-				</view>
-				<view class="password" v-if="item.isControlLike == 1 && item.currentTournamentGallery.isOrganizer == 1">
-					点赞密码:{{item.likePwd}} 密码请勿泄露给无关人员
-				</view>
-			</view>
-			<!-- 高尔夫列表 end -->
-			<!-- 高尔夫列表空 start -->
-			<view v-if="golfListNull.length===0" class="golf-listNull">
-				<img src="/static/image/null.png" alt="还没有球局呢!">
-				<view class="golf-null">还没有球局呢!</view>
-			</view>
-			<!-- 高尔夫列表空 end -->
-		</view>
 		<!-- 遮罩层 -->
 		<view class="authorization" v-if="determine">
 			<view class="box">
@@ -94,13 +50,35 @@
 				<image src="../../static/image/wx_authorization.png" mode=""></image>
 				<view class="buttom">
 					<view class="cancel" @click="onDetermine">
-						取消授权
+						取消参与
 					</view>
-					<button class="determine" type="primary" open-type="getUserInfo" @getuserinfo="getUserInfoPlayers" @click="golfLogin"
-					 hover-class="btn-hover">
-						微信授权
+					<button class="determine" type="primary" open-type="getUserInfo" @click="invitedPlayers" hover-class="btn-hover">
+						参与球局
 					</button>
 				</view>
+			</view>
+		</view>
+		<!-- 登录遮罩层 -->
+		<view class="authorization" v-if="loginStatus">
+			<view class="login-window-pops">
+				<button class="golf-auth" @click="loginStatus=false">
+					取消
+				</button>
+			</view>
+			<view class="login-window-pops">
+				<button class="golf-auth" type="primary" open-type="getUserInfo" @getuserinfo="getUserInfo" @click="golfLogin"
+				 hover-class="btn-hover">
+					登录
+				</button>
+			</view>
+		</view>
+		<!-- 新人礼包弹窗 -->
+		<view class="authorization and-the-top" v-if="newGiftBag">
+			<view class="new-gift-bag" v-if="!newGiftBagImgs" @click="newGiftBagImgs = true">
+				<image src="https://dingqiang-golf.oss-cn-shenzhen.aliyuncs.com/gift/toget.png" mode=""></image>
+			</view>
+			<view class="new-gift-bag-x" v-if="newGiftBagImgs" @click="newGiftBag = false">
+				<image src="https://dingqiang-golf.oss-cn-shenzhen.aliyuncs.com/gift/success.png" mode=""></image>
 			</view>
 		</view>
 	</view>
@@ -112,13 +90,6 @@
 	export default {
 		data() {
 			return {
-				golfList: [{
-					name: '四川成都国际场1111',
-					state: 0,
-					site: '成都麓山国际场地111',
-					time: '周四 2020-07-23 13:42',
-					num: '2人'
-				}],
 				current: 1,
 				golfListNull: [],
 				openId: '',
@@ -129,26 +100,42 @@
 				determine: false,
 				url: "",
 				activity: [], //活动列表
+				loginStatus: false, //登录遮罩层控制参数
+				newGiftBag: false, //新人礼包弹窗控制参数
+				newGiftBagImgs: false, //新人礼包弹窗内部图片控制参数
 			}
 		},
 		onLoad(options) {
-			if (options.scene) {
-				let scene = decodeURIComponent(options.scene);
-				this.scene = scene;
-				// 后续处理scene
-				if (scene) {
-					this.determine = true;
-				}
-			}
+			// if (options.scene) {
+			// 	let scene = decodeURIComponent(options.scene);
+			// 	this.scene = scene;
+			// 	// 后续处理scene
+			// 	if (scene) {
+			// 		this.determine = true;
+			// 	}
+			// }
+			//从邀请球手分享进入
 			if (options.golfTournamentId) {
 				this.scene = options.golfTournamentId;
-				// 后续处理scene
 				this.determine = true;
 			}
+			//从优惠劵分享进入
+			if (options.golfGalleryId) {
+				this.shareOneId = options.golfGalleryId;
+			}
 		},
-		// 下拉刷新
-		onPullDownRefresh() {
-			this.getDataList();
+		onShareAppMessage(res) {
+			if (res.from === 'button') { // 来自页面内分享按钮
+				return {
+					title: '立即领取50元订场优惠劵',
+					path: '/pages/index/index?golfGalleryId=' + uni.getStorageSync('golfGalleryId')
+				}
+			} else {
+				return {
+					title: '快来观战吧！',
+					path: '/pages/onlooker/onlooker?golfGalleryId=' + uni.getStorageSync('golfGalleryId')
+				}
+			}
 		},
 		async onShow() {
 			const {
@@ -165,10 +152,45 @@
 			}
 			// var pages = getCurrentPages()
 		},
+		created() {
+			console.log()
+			if (uni.getStorageSync('golfGalleryId') == '') {
+				this.loginStatus = true
+			}
+		},
 		mounted() {
 			this.activityList();
 		},
 		methods: {
+			//跳转活动分享
+			activitiesShare() {
+				uni.navigateTo({
+					url: '/pages/activitiesShare/activitiesShare'
+				});
+			},
+			//计分
+			jifen() {
+				uni.navigateTo({
+					url: '/pages/scoring/scoring'
+				});
+			},
+			//订场
+			dingchang() {
+				uni.navigateTo({
+					url: '/pages/booking/booking'
+				});
+			},
+			//工坊
+			gongfang() {
+				// uni.showToast({
+				// 	title: '正在开发中',
+				// 	duration: 2000,
+				// 	icon: "none"
+				// });
+				uni.navigateTo({
+					url: '/pages/workshop/workshop'
+				});
+			},
 			//获取活动列表数据
 			activityList() {
 				this.$api.api.activityList({
@@ -183,87 +205,10 @@
 				})
 			},
 			//跳转到活动详情页面
-			eventDetails() {
+			eventDetails(v) {
 				uni.navigateTo({
-					url: '/pages/eventDetails/eventDetails'
+					url: '/pages/eventDetails/eventDetails?activityId=' + v.golfActivityId
 				});
-			},
-			//获取当前页面列表数据
-			getDataList() {
-				this.golfListNul = [];
-				var _this = this;
-				this.$api.match.tournamentPage({
-					data: {
-						current: this.current,
-						size: 100,
-						galleryId: uni.getStorageSync('golfGalleryId')
-					}
-				}).then(res => {
-					if (res.data.code === 0) {
-						_this.golfListNull = res.data.data.records
-					}
-				})
-
-			},
-			goGameDelete(item) {
-				let _this = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否删除！',
-					success: function(res) {
-						if (res.confirm) {
-							_this.$api.player.tournamentGalleryRemove({
-								data: {
-									// golfGalleryId: item.golfGalleryId,
-									golfTournamentId: item.golfTournamentId,
-									golfTournamentGalleryId: item.currentTournamentGallery.golfTournamentGalleryId
-								}
-							}).then(res => {
-								if (res.data.code == 0) {
-									//操作成功
-									uni.showToast({
-										title: '删除成功',
-										duration: 2000
-									});
-									_this.getDataList();
-								} else {
-									uni.showToast({
-										title: '删除失败',
-										icon: "none",
-										duration: 2000
-									});
-								}
-							})
-						} else if (res.cancel) {
-
-						}
-					}
-				});
-			},
-			goGameDetail(golfTournamentId, golfTournamentGalleryId, isOrganizer, tournamentIdentity, item) {
-				uni.setStorage({
-					key: "golfTournamentGalleryId",
-					data: golfTournamentGalleryId
-				})
-				if (isOrganizer == 1) {
-					// 为组织者
-					uni.navigateTo({ //跳入记分卡
-						url: '/pages/score/score?golfTournamentId=' + golfTournamentId + '&type=' + 1
-					});
-					return
-				} else if (tournamentIdentity == 1) {
-					// 球员
-					uni.navigateTo({ //跳入记分卡
-						url: '/pages/score/score?golfTournamentId=' + golfTournamentId + '&type=' + 2
-					});
-					return
-				} else {
-					// 观众
-					uni.navigateTo({
-						url: '/pages/onlooker/onlooker?golfTournamentId=' + golfTournamentId
-					});
-					return
-				}
 			},
 			//获取用户信息
 			getUserInfo() {
@@ -297,73 +242,36 @@
 								sex: resUserInfo.sex,
 								openId: this.openId || uni.getStorageSync('openId'),
 								updatorOpenId: this.openId || uni.getStorageSync('openId'),
+								inviterId: this.shareOneId
 							},
 						})
 						if (res.code === 0) {
+							console.log(2222)
 							uni.setStorage({ //高尔夫球员ID存入本地
 								key: 'golfGalleryId',
 								data: res.data.golfGalleryId,
 							});
 
 							uni.hideLoading()
-							uni.navigateTo({
-								url: '/pages/startScoring/startScoring'
-							});
-							// uni.navigateTo({ //跳入球员设置页面
-							// 	url: '/pages/games/games'
-							// });
+							this.loginStatus = false;
+							//判断是否有传入分享人ID  如果有 跳出弹窗
+							if (res.data.isNewGallery == 1) {
+								this.newGiftBag = true;
+							}
+							//判断是否传入邀请球手ID 如果有 跳出弹窗
+							if (this.scene) {
+								this.determine = true;
+							}
 						}
 					})
 				})
 			},
-			//获取用户信息2
-			getUserInfoPlayers() {
-				new Promise(resolve => {
-					uni.getUserInfo({ //获取用户信息
-						success: res => {
-							resolve({
-								nickName: res.userInfo.nickName, //昵称
-								avatar: res.userInfo.avatarUrl, //头像
-								sex: res.userInfo.gender, //性别 0未填 1 男性 2女性
-							});
-						}
-					})
-				}).then(resUserInfo => {
-					uni.setStorage({
-						key: 'userInfo',
-						data: resUserInfo,
-					});
-					uni.showLoading({
-						title: '正在加载中'
-					})
-					this.$store.commit('userInfo', resUserInfo) //保存至Vuex内存
-					return new Promise(async resolve => {
-						const {
-							data: res
-						} = await this.$api.login.loginRequest({
-							data: {
-								avatar: resUserInfo.avatar,
-								creatorOpenId: this.openId || uni.getStorageSync('openId'),
-								nickname: resUserInfo.nickName,
-								sex: resUserInfo.sex,
-								openId: this.openId || uni.getStorageSync('openId'),
-								updatorOpenId: this.openId || uni.getStorageSync('openId'),
-							},
-						})
-						if (res.code === 0) {
-							uni.setStorage({ //高尔夫球员ID存入本地
-								key: 'golfGalleryId',
-								data: res.data.golfGalleryId,
-							});
-
-							uni.hideLoading()
-							this.determine = false;
-							uni.navigateTo({ //跳入球员设置页面
-								url: '/pages/invitedJoin/invitedJoin?id=' + this.scene + "&golfGalleryId=" + res.data.golfGalleryId
-							});
-						}
-					})
-				})
+			//跳转球员加入球局页面
+			invitedPlayers() {
+				this.determine = false;
+				uni.navigateTo({ //跳入球员设置页面
+					url: '/pages/invitedJoin/invitedJoin?id=' + this.scene + "&golfGalleryId=" + uni.getStorageSync('golfGalleryId')
+				});
 			},
 			//点击授权登录获取信息
 			async golfLogin() {
@@ -388,7 +296,6 @@
 						});
 					}).then(loginCode => {
 						return new Promise(resolve => {
-
 							this.$api.login.openIdRequest({
 								data: {
 									code: loginCode.code
@@ -419,6 +326,57 @@
 </script>
 
 <style scoped lang="less">
+	.container {
+		background-color: #ffffff;
+	}
+
+	.share {
+		// width: 93.6vw;
+		height: 27.73vw;
+		border-radius: 1.07vw;
+		margin-bottom: 4.27vw;
+		border: 0;
+		padding: 0;
+		image {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	.plate {
+		width: 100vw;
+		margin-left: -40rpx;
+		height: 30.2vw;
+		background-color: #ffffff;
+		border-radius: 0vw;
+		display: flex;
+		border-bottom: 3vw solid #f5f5f5;
+
+		>view {
+			flex: 1;
+
+			image {
+				width: 15.73vw;
+				height: 15.73vw;
+				margin-left: 9vw;
+				margin-top: 3.4vw;
+				border-radius: 50%;
+			}
+
+			view {
+				height: 3.33vw;
+				font-size: 3.47vw;
+				color: #333333;
+				text-align: center;
+				margin-top: 2.5vw;
+			}
+		}
+	}
+
+	.golf-title {
+		margin-top: 3vw;
+	}
+
 	.golf-auth {
 		margin-bottom: 54rpx;
 		border-radius: 60rpx;
@@ -514,6 +472,10 @@
 		margin-bottom: 15rpx;
 	}
 
+	.and-the-top {
+		z-index: 999;
+	}
+
 	.authorization {
 		width: 100%;
 		height: 100%;
@@ -571,6 +533,42 @@
 					color: #FFFFFF;
 					border-radius: 40rpx;
 				}
+			}
+		}
+
+		.login-window-pops {
+			width: 30vw;
+			// height: 20vw;
+			// line-height: 20vw;
+			text-align: center;
+			color: #ffffff;
+			float: left;
+			// background-color: #0DD561;
+			position: fixed;
+			bottom: 30vw;
+			left: 10vw;
+			font-size: 8vw;
+			font-weight: 650;
+			border-radius: 4vw;
+		}
+		.login-window-pops:nth-child(1)>button{
+			background-color: #999999;
+		}
+		.login-window-pops:nth-child(2){
+			margin-left: 50vw;
+		}
+
+		.new-gift-bag,
+		.new-gift-bag-x {
+			width: 74.67vw;
+			height: 74.67vw;
+			position: absolute;
+			top: 30vh;
+			left: 12.67vw;
+
+			>image {
+				width: 100%;
+				height: 100%;
 			}
 		}
 	}

@@ -13,6 +13,24 @@
 				</button>
 			</view>
 		</view>
+		<view class="golf-module">
+			<view class="box left" @click="orderList">
+				<view class="text">
+					<text>{{info.orderNumber}}</text>
+				</view>
+				<view class="text">
+					我的订单
+				</view>
+			</view>
+			<view class="box" @click="coupon">
+				<view class="text">
+					<text>{{info.couponNumber}}</text>
+				</view>
+				<view class="text">
+					优惠劵
+				</view>
+			</view>
+		</view>
 		<view class="golf-record">
 			<view class="golf-formItem right flex flex-between" @click="playRecords">
 				<text>打球记录</text>
@@ -48,14 +66,50 @@
 			}
 		},
 		methods: {
+			//跳转至优惠劵
+			coupon() {
+				uni.navigateTo({
+					url: '/pages/coupon/coupon'
+				});
+			},
+			//跳转至我的订单
+			orderList() {
+				if(uni.getStorageSync('golfGalleryId') == ''){
+					uni.showToast({
+						title: '请先登录',
+						duration: 2000,
+						icon: "none"
+					});
+					return
+				}
+				uni.switchTab({
+					url: '../orderList/orderList'
+				});
+			},
 			//跳转至打球记录
 			playRecords() {
+				if(uni.getStorageSync('golfGalleryId') == ''){
+					uni.showToast({
+						title: '请先登录',
+						duration: 2000,
+						icon: "none"
+					});
+					return
+				}
 				uni.navigateTo({ 
 					url: '/pages/PlayingRecord/PlayingRecord'
 				});
 			},
 			//跳转至围观记录
 			onlookersRecord() {
+				if(uni.getStorageSync('golfGalleryId') == ''){
+					uni.showToast({
+						title: '请先登录',
+						duration: 2000,
+						icon: "none"
+					});
+					return
+				}
 				uni.navigateTo({ 
 					url: '/pages/onlookersRecord/onlookersRecord'
 				});
@@ -156,7 +210,31 @@
 		mounted() {}
 	}
 </script>
-<style scoped>
+<style scoped lang="less">
+	.golf-module{
+		width: 93.6vw;
+			height: 21.87vw;
+			background-color: #ffffff;
+			border-radius: 1.07vw;
+			margin: auto;
+			margin-top: 4.23vw;
+			display: flex;
+			.box{
+				width: 49.9vw;
+				height: 16vw;
+				margin-top: 2.93vw;
+				.text{
+					height: 8vw;
+					line-height: 8vw;
+					font-size: 4.53vw;
+					color: #333333;
+					text-align: center;
+				}
+			}
+			.left{
+				border-right: 0.2px solid #eeeeee;
+			}
+	}
 	.normalClass{
 		outline: none;
 		background: rgba(0,0,0,0);

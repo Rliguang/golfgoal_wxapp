@@ -22,16 +22,16 @@
 					<view class="golf-date">周{{"日一二三四五六".charAt(new Date(golfData.teeTime.split(' ')[0]).getDay())}}
 						{{golfData.teeTime}}</view>
 				</view>
-				<view @click="onlookers" style="text-align: right; position: relative;left: 15vw;">
-					<image class="golf-scoring" src="/static/image/onlookers-list.png"></image>
-					<text class="golf-shareText">围观</text>
-					<view class="" style="position: absolute; top: -2vw; right: -1.5vw; color: #ffffff; font-size: 3vw; background-color: red;border-radius: 10rpx;padding: 0 1vw;">
-						{{gallerNumber}}
-					</view>
-				</view>
-				<view @click="toScoreDetail" v-if="tournamentStatus > 0">
+				<view @click="toScoreDetail" style="text-align: right; position: absolute;right: 15vw;" v-if="tournamentStatus > 0">
 					<image class="golf-scoring" src="/static/image/date.png"></image>
 					<text class="golf-shareText">计分卡</text>
+				</view>
+				<view @click="onlookers">
+					<image class="golf-scoring" src="/static/image/onlookers-list.png"></image>
+					<text class="golf-shareText">围观</text>
+					<view class="" style="position: absolute; top: -2vw; right: 0.3vw; color: #ffffff; font-size: 3vw; background-color: red;border-radius: 10rpx;padding: 0 1vw;">
+						{{gallerNumber}}
+					</view>
 				</view>
 			</view>
 			<view class="golf-scoringPk">
@@ -197,7 +197,7 @@
 						path: '/pages/index/index?golfTournamentId=' + this.golfTournamentId
 					}
 				}
-			}else{
+			} else {
 				return {
 					title: '快来观战吧！',
 					path: '/pages/onlooker/onlooker?golfTournamentId=' + this.golfTournamentId

@@ -14,42 +14,37 @@
 				</button>
 			</view>
 		</view>
-		<view class="show-data">
+		<!-- <view class="show-data">
 			<view class="">
 				截止时间 {{activity.closeDate}}
 			</view>
 			<view class="">
 				已报名: {{activity.number}}人
 			</view>
-		</view>
-
-
-		<view class="mask" v-if="isThumbPassword">
-			<view class="editPassword">
-				<view class="name">
-					姓名和手机号将用于订场
-				</view>
-				<view class="input-box">
-					<input class="uni-input" v-model="contact" focus placeholder="请输入真实姓名" />
-				</view>
-				<view class="input-box">
-					<input class="uni-input" v-model="contactWay" focus placeholder="请输入手机号" />
-				</view>
-				<view class="keys">
-					<view class="cancel" @click="paymini(false)">
-						取消
-					</view>
-					<view class="determine" @click="paymini(true)">
-						确定
-					</view>
-				</view>
+		</view> -->
+		
+		<view class="time">
+			<view class="text">
+				开球时间
+			</view>
+			<view class="plug-in-data" @click="onShowDatePicker('date')">
+				{{date}}
+			</view>
+			<view class="plug-in-time" @click="onShowDatePicker('time')">
+				{{time}}
 			</view>
 		</view>
+		<mx-date-picker :show="showPicker" :type="type" :value="value" :show-tips="true" :begin-text="'入住'" :end-text="'离店'"
+		 :show-seconds="true" @confirm="onSelected" @cancel="onSelected" />
 	</view>
 </template>
 
 <script>
+	import MxDatePicker from "@/components/mx-datepicker/mx-datepicker.vue";
 	export default {
+		components: {
+			MxDatePicker
+		},
 		data() {
 			return {
 				data: null,
@@ -57,15 +52,20 @@
 				contact: "",
 				contactWay: "",
 				activity: null, //活动数据
+				showPicker: false,
+				date: '2019/01/01',
+				time: '09:00:00',
+				type: 'rangetime',
+				value: '',
 			}
 		},
 		onLoad(options) {
-			// if (options.golfCourseId) {
-			// 	this.golfCourseId = options.golfCourseId
-			// }
+			this.activityId = options.activityId
+			this.activityList();
 		},
 		created() {
-			this.activityList();
+			var date = new Date();
+			this.date = date.toISOString().replace(/T.*/, ' ');
 		},
 		mounted() {
 		},
@@ -79,6 +79,44 @@
 		// 下拉刷新
 		onPullDownRefresh() {},
 		methods: {
+			//时间显示
+			onShowDatePicker(type) { 
+				this.type = type;
+				this.showPicker = true;
+				this.value = this[type];
+				console.log(this.value)
+			},
+			//时间选择
+			onSelected(e) { 
+				this.showPicker = false;
+				if (e) {
+					this[this.type] = e.value;
+				}
+			},
+			//获取活动数据
+			activityList() {
+				this.$api.api.getOneActivity({
+					data: {
+						activityId: this.activityId,
+					}
+				}).then(res => {
+					if (res.data.code === 0) {
+						this.activity = res.data.data
+					}
+				})
+			},
+			signUp() {
+				let detail = {
+					activityId: this.activityId,
+					courseName: this.activity.activityTitle,
+					costUnitPrice: this.activity.price,
+					scheduleDate: this.date + " " + this.time,
+					type: 0, // 活动为0   订单列表为1
+				}
+				uni.navigateTo({ //跳入订单信息页面
+					url: '/pages/orderInformation/orderInformation?detailDate=' + JSON.stringify(detail)
+				});
+			},
 			//获取用户信息
 			getUserInfo() {
 				new Promise(resolve => {
@@ -119,8 +157,8 @@
 								data: res.data.golfGalleryId,
 							});
 							uni.hideLoading()
-							console.log(12321);
 							this.isThumbPassword = true;
+							this.signUp()
 						}
 					})
 				})
@@ -171,69 +209,7 @@
 				})
 				/*  #endif  */
 			},
-			//获取活动数据
-			activityList() {
-				this.$api.api.getOneActivity({
-					data: {
-						activityId: 1,
-					}
-				}).then(res => {
-					if (res.data.code === 0) {
-						this.activity = res.data.data
-					}
-				})
-			},
-			signUp() {
-				this.isThumbPassword = true;
-			},
-			paymini: function(is) {
-				if (!is) {
-					this.isThumbPassword = false;
-					return
-				}
-				this.$api.api.activityPreOrder({
-					data: {
-						activityId: 1,
-						golfGalleryId: uni.getStorageSync('golfGalleryId'),
-					}
-				}).then(res => {
-					this.$api.api.activityUnifiedpay({
-						data: {
-							contact: this.contact,
-							contactWay: this.contactWay,
-							orderId: res.data.data.golfOrderId
-						}
-					}).then(res => {
-						// 调起支付
-						uni.requestPayment({
-							provider: 'wxpay',
-							timeStamp: res.data.data.timestamp,
-							nonceStr: res.data.data.nonceStr,
-							package: "prepay_id=" + res.data.data.prepayId,
-							signType: res.data.data.signType,
-							paySign: res.data.data.paySign,
-							success: function(res) {
-								console.log('success:' + JSON.stringify(res));
-								this.isThumbPassword = false;
-								uni.showToast({
-									title: '支付成功',
-									icon: "none",
-									duration: 2000
-								});
-							},
-							fail: function(err) {
-								uni.showToast({
-									title: '支付失败',
-									icon: "none",
-									duration: 2000
-								});
-								console.log('fail:' + JSON.stringify(err));
-							}
-						});
-					})
-
-				})
-			},
+			
 		}
 	}
 </script>
@@ -244,16 +220,60 @@
 		background-color: #c2c2c2;
 		margin: 0;
 		padding: 0;
-		padding-bottom: 13vw;
+		// padding-bottom: 13vw;
 		.imgs {
 			width: 100%;
 			image {
 				width: 100%;
-				height: 160vh;
-				margin-bottom: 13vh;
+				height: 1346.4vw;
+				margin-bottom: 37vw;
 			}
 		}
-
+		
+		.time {
+			width: 93.6vw;
+			height: 14.4vw;
+			background-color: #ffffff;
+			display: flex;
+			padding: 0 3.2vw;
+			position: fixed;
+			bottom: 25.2vw;
+			.text {
+				width: 45vw;
+				height: 14.4vw;
+				line-height: 14.4vw;
+				font-size: 3.73vw;
+				color: #333333;
+			}
+		
+			.plug-in-data {
+				width: 25vw;
+				height: 5.87vw;
+				line-height: 5.87vw;
+				background-color: #eeeeee;
+				border-radius: 2.93vw;
+				margin-top: 4.27vw;
+				margin-right: 1.47vw;
+				font-size: 3.2vw;
+				color: #0dd561;
+				padding: 0 3.87vw;
+				text-align: center;
+			}
+		
+			.plug-in-time {
+				width: 20vw;
+				height: 5.87vw;
+				line-height: 5.87vw;
+				background-color: #eeeeee;
+				border-radius: 2.93vw;
+				font-size: 3.2vw;
+				color: #0dd561;
+				margin-top: 4.27vw;
+				padding: 0 3.87vw;
+				text-align: center;
+			}
+		}
+		
 		.sign-up {
 			width: 100vw;
 			height: 25.2vw;
@@ -286,7 +306,7 @@
 		.show-data {
 			height: 5.6vw;
 			position: fixed;
-			bottom: 27.33vw;
+			bottom: 40vw;
 			right: 3.2vw;
 			display: flex;
 			justify-content: flex-end;

@@ -627,16 +627,16 @@
 		display: flex;
 
 		.onePieces {
-			height: 98rpx;
+			height: 13.07vw;
 			display: flex;
 
 			.row {
-				width: 54rpx;
+				width: 8.1vw;
 				height: 100%;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 28rpx;
+				font-size: 4.8vw;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;
 				border: 1rpx solid rgba(238, 238, 238, 1);
@@ -778,13 +778,13 @@
 
 			view {
 				view {
-					justify-content: space-around;
+					// justify-content: space-around;
 				}
 			}
 
 			.contents {
 				display: inline-flex;
-				width: 54rpx;
+				width: 8.1vw;
 				height: 100%;
 				// display: flex;
 				flex-direction: column;
@@ -1071,9 +1071,9 @@
 	}
 
 	.bird {
-		width: 40rpx;
-		height: 40rpx;
-		margin: 25rpx auto;
+		width: 7vw;
+		height: 7vw;
+		margin: 1vw auto;
 		line-height: 40rpx;
 		text-align: center;
 	}

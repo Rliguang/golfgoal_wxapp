@@ -1,9 +1,18 @@
 <template>
 	<view class="container">
+		<view class="box">
+			<view class="" v-for="value in scheduleCourseList" @click="cityID(value)">
+				{{value.cityName}}
+				<text>/{{value.courseNumber}}</text>
+			</view>
+		</view>
+		<view class="cityName">
+			当前城市: {{cityName}}
+		</view>
 		<view class="stadium" v-for="item in golfCourseList" @click="jump(item)">
 			<view class="imgs">
 				<view class="" v-if="discount>1">
-
+					
 				</view>
 				<image v-if="item.cover" :src="'https://dingqiang-golf.oss-cn-shenzhen.aliyuncs.com/'+item.cover" mode=""></image>
 				<image v-else src="https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1906469856,4113625838&fm=26&gp=0.jpg"
@@ -19,7 +28,8 @@
 				{{item.address}}
 			</view>
 			<view class="price">
-				¥{{item.price}}
+				<span>¥{{item.price}}</span>
+				劵后价:￥{{item.totalPrice}}
 			</view>
 		</view>
 	</view>
@@ -29,17 +39,30 @@
 	export default {
 		data() {
 			return {
-				golfCourseList: null
+				golfCourseList: null,
+				scheduleCourseList: null,
+				cityId: '',
+				cityName: '成都'
 			}
 		},
 		created() {
 			this.chooseEnds()
+			this.scheduleCourseListCity()
+		},
+		onShareAppMessage(res) {
+			
 		},
 		// 下拉刷新
 		onPullDownRefresh() {
 			this.chooseEnds();
 		},
 		methods: {
+			//点击城市模块
+			cityID(value){
+				this.cityId = value.cityId;
+				this.cityName = value.cityName;
+				this.chooseEnds()
+			},
 			//跳转
 			jump(item) {
 				console.log(item.golfCourseId)
@@ -47,13 +70,27 @@
 					url: '/pages/eetailsPitch/eetailsPitch?golfCourseId='+item.golfCourseId
 				});
 			},
+			//获取城市列表
+			async scheduleCourseListCity(){
+				const {
+					data: res
+				} = await this.$api.api.scheduleCourseListCity({
+					data: {
+					}
+				})
+				if (res.code === 0) {
+					this.scheduleCourseList = res.data.records
+				}
+			},
+			
+			
 			//获取球场信息
-			async chooseEnds(courseName = '') {
+			async chooseEnds() {
 				const {
 					data: res
 				} = await this.$api.course.chooseEndsRequest({
 					data: {
-						courseName: courseName
+						cityId: this.cityId,
 					}
 				})
 				if (res.code === 0) {
@@ -69,7 +106,32 @@
 		background-color: #f5f5f5;
 		margin: 0;
 		padding: 0;
-
+		
+		.box{
+			padding: 3.2vw;
+			display: flex;
+			flex-wrap: wrap;
+			view{
+				width: 22.8vw;
+				height: 11vw;
+				line-height: 11vw;
+				border: 1px solid #cccccc;
+				color: #000000;
+				text-align: center;
+				font-size: 4vw;
+				text{
+					color: #999999;
+					font-size: 3vw;
+				}
+			}
+		}
+		.cityName{
+			height: 12.4vw;
+			line-height: 12.4vw;
+			margin-left: 3.2vw;
+			color: #999999;
+			font-size: 3.4vw;
+		}
 		.stadium {
 			width: 93.6vw;
 			height: 61.2vw;
@@ -133,8 +195,13 @@
 				height: 5vw;
 				top: 47vw;
 				right: 3.2vw;
-				color: #FF3B30;
 				font-size: 3.4vw;
+				color: #ff3b30;
+				span{
+					color: #999999;
+					font-size: 550;
+					text-decoration:line-through;
+				}
 			}
 		}
 	}

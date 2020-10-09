@@ -113,6 +113,69 @@ export default {
 		}, params)
 	},
 	
+	//获取订单列表
+	orderPage(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/mine/orderPage',
+			method: 'post'
+		}, params)
+	},
+	//获取订单详情
+	orderDetail(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/order/orderDetail',
+			method: 'post'
+		}, params)
+	},
+	//获取订单详情
+	activityActivityUnifiedpay(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/activity/activityUnifiedpay',
+			method: 'post'
+		}, params)
+	},
+	//传入预定场次时间 返回场次预定时间价格
+	scheduleCourseOnSale(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/scheduleCourse/scheduleCourseOnSale',
+			method: 'post'
+		}, params)
+	},
+	//订场预定下单
+	scheduleCoursePreOrder(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/scheduleCourse/scheduleCoursePreOrder',
+			method: 'post'
+		}, params)
+	},
+	//订场订单支付
+	scheduleCourseUnifiedpay(params) {
+		return http.httpJsonRequest({
+			url: '/api/biz/golf/scheduleCourse/scheduleCourseUnifiedpay',
+			method: 'post'
+		}, params)
+	},
+	//优惠劵列表获取接口
+	couponList(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/coupon/list',
+			method: 'post'
+		}, params)
+	},
+	//是否拥有优惠卷
+	hasCoupon(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/mine/hasCoupon',
+			method: 'post'
+		}, params)
+	},
+	//获取城市ID
+	scheduleCourseListCity(params) {
+		return http.httpRequest({
+			url: '/api/biz/golf/scheduleCourse/listCity',
+			method: 'post'
+		}, params)
+	}
 	
 	
 	

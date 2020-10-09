@@ -12,9 +12,11 @@
 
 <script>
 	export default {
+		
 		data() {
 			return {
-				data: null
+				data: null,
+				
 			}
 		},
 		onLoad(option) {

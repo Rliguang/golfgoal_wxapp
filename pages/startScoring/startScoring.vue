@@ -182,7 +182,7 @@
 					//0为不点加锁
 					isControlLike = 0;
 				} else {
-					if (this.thumbUpPassword*1+''.length == 6) {
+					if (this.thumbUpPassword.length == 6) {
 						isControlLike = 1;
 					} else {
 						uni.showToast({

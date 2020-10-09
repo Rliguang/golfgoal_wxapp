@@ -130,8 +130,8 @@
 	.golf-thead {
 		background-color: #eee;
 		min-width: 200rpx;
-		height: 88rpx;
-		line-height: 88rpx;
+		height: 16.8vw;
+		line-height: 16.8vw;
 		font-size: 24rpx;
 		color: #666;
 		border: 1rpx solid #e5e5e5;
@@ -158,9 +158,9 @@
 		box-sizing: border-box;
 		position: relative;
 		padding: 0 20rpx;
-		min-width: 130rpx;
-		height: 88rpx;
-		line-height: 88rpx;
+		min-width:33.87vw;
+		height: 16.8vw;
+		line-height: 16.8vw;
 		font-size: 24rpx;
 		color: #666;
 		border: 1rpx solid #e5e5e5;
@@ -171,8 +171,8 @@
 			position: absolute;
 			top: 25rpx;
 			left: 22rpx;
-			width: 42rpx;
-			height: 42rpx;
+			width: 10.93vw;
+			height: 10.93vw;
 			border-radius: 50%;
 			margin-right: 10rpx;
 			vertical-align: middle;
@@ -181,13 +181,13 @@
 		.name {
 			display: inline-block;
 			width: 68rpx;
-			left: 88rpx;
+			left: 16.96vw;
 			white-space: nowrap;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			line-height: 100%;
 			position: absolute;
-			top: 10rpx;
+			top: 3.87vw;
 		}
 
 		.tee {
@@ -197,8 +197,8 @@
 			width: 80rpx;
 			height: 30rpx;
 			line-height: 30rpx;
-			top: 45rpx;
-			left: 88rpx; 
+			top: 8.8vw;
+			left: 16.96vw;
 			color: #ffffff;
 			font-size: 20rpx;
 		}
@@ -218,22 +218,25 @@
 	.tbody,
 	.row {
 		box-sizing: border-box;
-		line-height: 88rpx;
-		font-size: 30rpx;
+		line-height: 16.8vw;
+		font-size: 4.27vw;
 		color: #666;
-		min-width: 64rpx;
-		height: 88rpx;
+		min-width: 16.8vw;
+		height: 16.8vw;
 		border: 1rpx solid #e5e5e5;
 		border-bottom: none;
 		border-right: none;
-
+		font-weight: 600;
+		>text{
+			margin-top: 2vw;
+		}
 		>.holeNo {
-			width: 36rpx;
-			height: 36rpx;
-			border-radius: 36rpx;
-			line-height: 36rpx;
+			width: 6.93vw;
+			height: 6.93vw;
+			border-radius: 50%;
+			line-height: 6.93vw;
 			background-color: rgba(153, 153, 153, 1);
-			margin: 10rpx auto 0;
+			margin: 1.6vw auto 1.8vw;
 			color: white;
 		}
 	}
@@ -259,10 +262,10 @@
 	}
 
 	.bird {
-		width: 40rpx;
-		height: 40rpx;
-		margin: 25rpx auto;
-		line-height: 40rpx;
+		width: 6.93vw;
+		height: 6.93vw;
+		margin: 5.2vw auto;
+		line-height: 6.93vw;
 	}
 
 	.birda {
